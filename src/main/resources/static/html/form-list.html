@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แบบฟอร์มคำร้อง | Petition System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css\form-list.css">
+</head>
+<body>
+
+    <!-- Header แบบเดียวกับหน้า Home -->
+    <header class="navbar">
+        <div class="top-bar">
+            <div class="logo">
+                <img src="/Photo/Sci_TU_Logo_TH-1.png" alt="TU Logo">
+            </div>
+
+            <div class="account" id="accountBtn">
+                <img src="/Photo/broker-vector-icon.jpg" alt="User">
+                <div class="account-info">
+                    <span class="name"></span>
+                    <span class="id"></span>
+                </div>
+            </div>
+
+            <div class="popup" id="popup">
+                <p><span id="popupName"></span><br><small id="popupID"></small></p>
+                <button id="logoutBtn">LOGOUT</button>
+            </div>
+
+        </div>
+
+        <nav class="menu-bar">
+            <a href="#">อาจารย์ผู้สอน</a>
+            <a href="#">ฝ่ายคณะบดี</a>
+            <a href="#">เจ้าหน้าที่ฝ่ายวิชาการภาคปกติ</a>
+            <a href="#">เจ้าหน้าที่ฝ่ายวิชาการภาคพิเศษ</a>
+            <a href="#">เจ้าหน้าที่คณะวิทยาศาสตร์ฯ</a>
+            <a href="form-list.html">ตัวอย่างแบบฟอร์มคำร้อง</a>
+            <a href="upload.html">อัพโหลดแบบฟอร์มคำร้อง</a>
+        </nav>
+    </header>
+
+    <!-- เนื้อหาหลัก -->
+    <main>
+        <a href="home.html" class="back-btn">← Back to Home</a>
+        <h2>แบบฟอร์มต่าง ๆ</h2>
+
+        <div class="form-list">
+            <a href="https://drive.google.com/file/d/1Cz4iHim3H2jj1fL2Wf9ZA_RE46PunlCo/view"target="_blank" rel="noopener noreferrer"class ="form-item">แบบคำร้องทั่วไป</a>
+            <a href="https://drive.google.com/file/d/1qwPxpVhuG_bEGeFFCqgB9Y5IExXXLAhF/view"target="_blank" rel="noopener noreferrer"class="form-item">แบบฟอร์มคำร้องขอตรวจสอบคะแนนหรือเกรด</a>
+            <a href="https://drive.google.com/file/d/1DJO0GMaMc7GP3LMk1dakrzSBitt0I1ge/view"target="_blank" rel="noopener noreferrer"class="form-item">แบบฟอร์มคำร้องขอเพิ่ม-ถอนรายวิชา</a>
+            <a href="https://drive.google.com/file/d/1gxH11OZc6_dmP72qSotbH49UexO5Yumi/view"target="_blank" rel="noopener noreferrer"class="form-item">แบบฟอร์มคำร้องขอลาพักการศึกษา</a>
+            <a href="https://drive.google.com/file/d/1xRjdj0X6XT2FHnnWGoUuuIM4tpop5gut/view"target="_blank" rel="noopener noreferrer"class="form-item">แบบฟอร์มหนังสือยินยอมผู้ปกครอง</a>
+            <a href="https://drive.google.com/drive/folders/1-_wMHzfgwS1HkDEFYP3_HH5CoG4sg_Kr"target="_blank" rel="noopener noreferrer"class="form-item">แบบฟอร์มใบลาหยุดเรียน</a>
+            <a href="https://drive.google.com/file/d/1ETnpSviJfpH3Es-Wn1VABdsQfUKuEfu8/view"target="_blank" rel="noopener noreferrer"class="form-item">แบบฟอร์มใบลาป่วย</a>
+            <a href="https://drive.google.com/file/d/1AVc92579tgOWMTSR56lWOEYhAlRr6U_Q/view"target="_blank" rel="noopener noreferrer"class="form-item">แบบฟอร์มขอทุนภัยพิบัติคณะวิทย์ฯ</a>
+            <a href="https://drive.google.com/file/d/10A0-xveY6SKKY2wa_LlVVCmXSIOr_QNn/view"target="_blank" rel="noopener noreferrer"class="form-item">คำรับรองการศึกษาครบตามหลักสูตรระดับปริญญาตรี</a>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>คณะวิทยาศาสตร์และเทคโนโลยี มธ. ศูนย์รังสิต ชั้น 3 อาคารบรรยายรวม 5<br>
+        เลขที่ 99 หมู่ 18 ถนนพหลโยธิน ต.คลองหนึ่ง อ.คลองหลวง ปทุมธานี 12120<br>
+        โทรศัพท์ : 0-2564-4440-79 ต่อ 2010</p>
+        <p>Email: <a href="mailto:SCITECH.THAMMASAT@GMAIL.COM">scitech.thammasat@gmail.com</a> |
+           Facebook: <a href="https://www.facebook.com/ScienceThammasat/" target="_blank" rel="noopener noreferrer">Science and Technology Thammasat Official</a></p>
+    </footer>
+    <script src="auth.js"></script>
+    <script>
+        // บังคับให้ต้องล็อกอินก่อน
+        const session = requireAuth("login.html");
+
+        // (ออปชัน) ใส่ชื่อ-รหัสนักศึกษาในหัวเว็บ
+        document.addEventListener("DOMContentLoaded", () => {
+            fillUserHeader(); // สำหรับหัวมุมขวา
+        });
+    </script>
+    <script>
+        // ✅ อัปเดต popup ให้แสดงข้อมูล user
+        document.addEventListener("DOMContentLoaded", () => {
+        const session = getAuthSession();
+        if (session) {
+            const popupName = document.getElementById("popupName");
+            const popupID = document.getElementById("popupID");
+            if (popupName) popupName.textContent = session.name;
+            if (popupID) popupID.textContent = session.student_id;
+        }
+        });
+
+        // ✅ Popup เปิด-ปิด
+        const accountBtn = document.getElementById("accountBtn");
+        const popup = document.getElementById("popup");
+        accountBtn.addEventListener("click", () => popup.classList.toggle("show"));
+        document.addEventListener("click", e => {
+            if (!accountBtn.contains(e.target) && !popup.contains(e.target)) popup.classList.remove("show");
+        });
+
+        // ✅ Logout ปลอดภัย
+        document.getElementById("logoutBtn").addEventListener("click", () => {
+            if (confirm("ต้องการออกจากระบบหรือไม่?")) logout("login.html");
+        });
+    </script>
+    
+
+</body>
+</html>

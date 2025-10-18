@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>แก้ไขไฟล์คำร้อง</title>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/html/css/upload-edit.css">
+</head>
+<body>
+  <header class="navbar">
+        <!-- แถบบน: โลโก้ + ข้อมูลผู้ใช้ -->
+        <div class="top-bar">
+            <div class="logo">
+                <img src="/Photo/Sci_TU_Logo_TH-1.png" alt="TU Logo">
+            </div>
+
+            <div class="account" id="accountBtn">
+                <img src="/Photo/broker-vector-icon.jpg" alt="User">
+                <div class="account-info">
+                    <span class="name"></span>
+                    <span class="id"></span>
+                </div>
+            </div>
+
+            <!-- Popup -->
+            <div class="popup" id="popup">
+                <p><span id="popupName"></span><br><small id="popupID"></small></p>
+                <button id="logoutBtn">LOGOUT</button>
+            </div>
+        </div>
+
+        <!-- แถบล่าง: เมนูหลัก -->
+        <nav class="menu-bar">
+            <a href="#">อาจารย์ผู้สอน</a>
+            <a href="#">ฝ่ายคณะบดี</a>
+            <a href="#">เจ้าหน้าที่ฝ่ายวิชาการภาคปกติ</a>
+            <a href="#">เจ้าหน้าที่ฝ่ายวิชาการภาคพิเศษ</a>
+            <a href="#">เจ้าหน้าที่คณะวิทยาศาสตร์ฯ</a>
+            <a href="form-list.html">ตัวอย่างแบบฟอร์มคำร้อง</a>
+            <a href="upload.html">อัพโหลดแบบฟอร์มคำร้อง</a>
+        </nav>
+    </header>
+
+    <main>
+        <a href="home.html" class="back-btn">← Back to Home</a>
+
+        <!-- ✅ เพิ่ม container หลัก -->
+        <div class="edit-container">
+
+            <!-- ✅ ฝั่งซ้าย: กล่องแสดง preview -->
+            <div class="preview-box" id="previewBox">
+                <p id="previewText">คลิกเพื่อแก้ไขไฟล์คำร้อง</p>
+            </div>
+
+            <!-- ✅ ฝั่งขวา: ส่วนฟอร์มข้อมูล -->
+            <div class="form-area">
+                <p><strong>ไฟล์ที่อัปโหลด:</strong> <span id="fileName"></span></p>
+                <p><strong>อาจารย์ที่ปรึกษา:</strong>
+                <input type="text" id="advisor" placeholder="ใส่ชื่ออาจารย์ที่ปรึกษา">
+                </p>
+
+                <div class="btn-group">
+                    <button id="sendBtn" class="btn btn-send">ส่งคำร้อง</button>
+                    <button id="deleteBtn" class="btn btn-delete">ลบคำร้อง</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+
+  <!-- 🔸 Footer -->
+    <footer>
+        <p>คณะวิทยาศาสตร์และเทคโนโลยี มธ. ศูนย์รังสิต ชั้น 3 อาคารบรรยายรวม 5<br>
+        เลขที่ 99 หมู่ 18 ถนนพหลโยธิน ต.คลองหนึ่ง อ.คลองหลวง ปทุมธานี 12120<br>
+        โทรศัพท์ : 0-2564-4440-79 ต่อ 2010</p>
+        <p>Email: <a href="mailto:SCITECH.THAMMASAT@GMAIL.COM">scitech.thammasat@gmail.com</a> |
+           Facebook: <a href="https://www.facebook.com/ScienceThammasat/" target="_blank" rel="noopener noreferrer">Science and Technology Thammasat Official</a></p>
+    </footer>
+    <script src="auth.js"></script>
+    <script>
+        // บังคับให้ต้องล็อกอินก่อน
+        const session = requireAuth("login.html");
+
+        // (ออปชัน) ใส่ชื่อ-รหัสนักศึกษาในหัวเว็บ
+        document.addEventListener("DOMContentLoaded", () => {
+            fillUserHeader(); // สำหรับหัวมุมขวา
+        });
+    </script>
+	<script>
+	  // =============== Popup Profile ===============
+	  const accountBtn = document.getElementById('accountBtn');
+	  const popup = document.getElementById('popup');
+
+	  accountBtn.addEventListener('click', () => {
+	      popup.classList.toggle('show');
+	  });
+
+	  document.addEventListener('click', (e) => {
+	      if (!accountBtn.contains(e.target) && !popup.contains(e.target)) {
+	          popup.classList.remove('show');
+	      }
+	  });
+
+	  document.getElementById('logoutBtn').addEventListener('click', () => {
+	      alert("ออกจากระบบเรียบร้อย");
+	      localStorage.removeItem("auth_session");
+	      window.location.href = "login.html";
+	  });
+
+	  // =============== โหลดไฟล์ที่อัปโหลดจากหน้า upload.html ===============
+	  const uploadedFileName = localStorage.getItem("uploadedFileName");
+	  const uploadedFilePreview = localStorage.getItem("uploadedFilePreview");
+	  const fileNameSpan = document.getElementById("fileName");
+	  const previewBox = document.getElementById("previewBox");
+
+	  if (!uploadedFileName) {
+	      alert("กรุณาอัปโหลดไฟล์ก่อนเข้าหน้านี้");
+	      window.location.href = "upload.html";
+	  } else {
+	      fileNameSpan.textContent = uploadedFileName;
+
+	      const ext = uploadedFileName.split('.').pop().toLowerCase();
+	      previewBox.innerHTML = "";
+
+	      if (ext === "png" || ext === "jpg" || ext === "jpeg") {
+	          const img = document.createElement("img");
+	          img.src = uploadedFilePreview || "";
+	          img.alt = "Preview";
+	          img.classList.add("preview-image");
+	          previewBox.appendChild(img);
+	      } else {
+	          previewBox.innerHTML = '<img src="https://cdn-icons-png.flaticon.com/512/337/337946.png" alt="PDF" class="preview-pdf">';
+	      }
+	  }
+
+	  // =============== อัปโหลดไฟล์ใหม่เมื่อคลิก Preview ===============
+	  previewBox.addEventListener("click", () => {
+	      const newFile = document.createElement("input");
+	      newFile.type = "file";
+	      newFile.accept = ".pdf,.png,.jpg,.jpeg";
+	      newFile.click();
+
+	      newFile.addEventListener("change", () => {
+	          const file = newFile.files[0];
+	          if (!file) return;
+
+	          const validTypes = ["application/pdf", "image/png", "image/jpeg"];
+	          if (!validTypes.includes(file.type)) {
+	              alert("อัปโหลดได้เฉพาะไฟล์ PDF, PNG, หรือ JPG เท่านั้น");
+	              return;
+	          }
+
+	          localStorage.setItem("uploadedFileName", file.name);
+	          if (file.type.startsWith("image/")) {
+	              const reader = new FileReader();
+	              reader.onload = () => {
+	                  localStorage.setItem("uploadedFilePreview", reader.result);
+	                  location.reload();
+	              };
+	              reader.readAsDataURL(file);
+	          } else {
+	              localStorage.removeItem("uploadedFilePreview");
+	              location.reload();
+	          }
+	      });
+	  });
+
+	  // =============== ปุ่ม "ส่งคำร้อง" ===============
+	  document.getElementById("sendBtn").addEventListener("click", async () => {
+	      if (!confirm("ยืนยันการส่งคำร้องจริงหรือไม่?")) return;
+
+	      const user = JSON.parse(localStorage.getItem("auth_session") || "{}");
+	      const advisorName = document.getElementById("advisor").value.trim();
+
+	      if (!advisorName) {
+	          alert("กรุณากรอกชื่ออาจารย์ที่ปรึกษา");
+	          return;
+	      }
+
+	      const petition = {
+	          studentId: user.studentId || "ไม่ทราบรหัส",
+	          studentName: user.studentName || "ไม่ทราบชื่อ",
+	          advisorName: advisorName,
+	          fileName: localStorage.getItem("uploadedFileName") || "petition.pdf"
+	      };
+
+	      try {
+	          const response = await fetch("http://localhost:8081/api/petitions/upload", {
+	              method: "POST",
+	              headers: { "Content-Type": "application/json" },
+	              body: JSON.stringify(petition)
+	          });
+
+	          if (response.ok) {
+	              alert("อัปโหลดคำร้องเรียบร้อยแล้ว!");
+	              localStorage.removeItem("uploadedFileName");
+	              localStorage.removeItem("uploadedFilePreview");
+	              window.location.href = "upload-success.html";
+	          } else {
+	              alert("❌ เกิดข้อผิดพลาดในการส่งคำร้อง");
+	          }
+	      } catch (err) {
+	          console.error(err);
+	          alert("⚠️ ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้");
+	      }
+	  });
+
+	  // =============== ปุ่ม "ลบคำร้อง" ===============
+	  document.getElementById("deleteBtn").addEventListener("click", () => {
+	      if (confirm("ต้องการลบคำร้องนี้จริงหรือไม่?")) {
+	          localStorage.removeItem("uploadedFileName");
+	          localStorage.removeItem("uploadedFilePreview");
+	          window.location.href = "upload.html";
+	      }
+	  });
+	</script>
+    
+</body>
+</html>
