@@ -1,55 +1,87 @@
-async function login(email, password) {
-  try {
-    const res = await fetch("http://localhost:8081/api/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password })
-    });
-
-    if (!res.ok) return { ok: false, message: "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง" };
-
-    const data = await res.json();
-    if (data.ok) {
-      // เก็บข้อมูลผู้ใช้ไว้ใน localStorage
-      localStorage.setItem("auth", JSON.stringify({
-        name: data.name,
-        studentId: data.studentId,
-        email: email
-      }));
-      return { ok: true, message: "เข้าสู่ระบบสำเร็จ" };
-    } else {
-      return { ok: false, message: data.message };
-    }
-
-  } catch (err) {
-    console.error("Login error:", err);
-    return { ok: false, message: "เชื่อมต่อระบบไม่สำเร็จ" };
+// ============================ MOCK USERS ============================
+const MOCK_USERS = [
+  {
+    email: "6509650187@dome.tu.ac.th",
+    password: "1234",
+    name: "อิทธิเชษฐ์ หงษ์วรพัฒน์",
+    student_id: "6509650187"
+  },
+  {
+    email: "student@dome.tu.ac.th",
+    password: "password",
+    name: "Student Demo",
+    student_id: "6000000000"
+  },
+  {
+    email: "test@dome.tu.ac.th",
+    password: "1111",
+    name: "ทดสอบ ระบบ",
+    student_id: "6700000001"
   }
+];
+
+// ============================ AUTH FUNCTIONS ============================
+
+// ✅ เก็บ session ลง localStorage
+function setAuthSession(user) {
+  const session = {
+    name: user.name,
+    student_id: user.student_id,
+    email: user.email,
+    login_time: Date.now()
+  };
+  localStorage.setItem("auth", JSON.stringify(session));
 }
 
+// ✅ ดึง session จาก localStorage
 function getAuthSession() {
-  return JSON.parse(localStorage.getItem("auth") || "null");
-}
-
-function logout() {
-  localStorage.removeItem("auth");
-  window.location.href = "login.html";
-}
-
-function requireAuth(redirectTo = "login.html") {
-    //const session = getAuthSession();
-    //if (!session) {
-    //    window.location.href = redirectTo;
-    //    throw new Error("Unauthorized");
-    //}
-    //return session;
-	return { name: "Test User", id: "6509999999" }; // mock user สำหรับทดสอบ
-}
-
-function fillUserHeader() {
-  const user = getAuthSession();
-  if (user) {
-    document.querySelector(".account-info .name").textContent = user.name;
-    document.querySelector(".account-info .id").textContent = user.studentId;
+  try {
+    const data = localStorage.getItem("auth");
+    return data ? JSON.parse(data) : null;
+  } catch {
+    return null;
   }
+}
+
+// ✅ ลบ session
+function clearAuthSession() {
+  localStorage.removeItem("auth");
+}
+
+// ✅ login (mock)
+async function login(email, password) {
+  const found = MOCK_USERS.find(
+    u => u.email === email && u.password === password
+  );
+  if (!found) {
+    return { ok: false, message: "อีเมลหรือรหัสผ่านไม่ถูกต้อง" };
+  }
+  setAuthSession(found);
+  return { ok: true, user: found };
+}
+
+// ✅ ตรวจว่าล็อกอินหรือยัง (ใช้ในทุกหน้า)
+function requireAuth(redirectTo = "login.html") {
+  const s = getAuthSession();
+  if (!s) {
+    window.location.href = redirectTo;
+    throw new Error("Unauthorized");
+  }
+  return s;
+}
+
+// ✅ logout
+function logout(redirectTo = "login.html") {
+  clearAuthSession();
+  window.location.href = redirectTo;
+}
+
+// ✅ แสดงชื่อ + รหัส นศ. ใน header
+function fillUserHeader(nameSel = ".account-info .name", idSel = ".account-info .id") {
+  const s = getAuthSession();
+  if (!s) return;
+  const nameEl = document.querySelector(nameSel);
+  const idEl = document.querySelector(idSel);
+  if (nameEl) nameEl.textContent = s.name;
+  if (idEl) idEl.textContent = s.student_id;
 }

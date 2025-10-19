@@ -22,46 +22,35 @@
       <p id="errorMsg" class="error"></p>
     </form>
   </div>
-
-    <script src="auth.js"></script>
+  <script src="auth.js"></script>
     <script>
-        // ถ้าเคยล็อกอินอยู่แล้ว ส่งเข้าหน้า home เลย
-        if (getAuthSession()) window.location.href = "home.html";
+      // ถ้าเคยล็อกอินอยู่แล้ว ส่งเข้าหน้า home ทันที
+      const existing = getAuthSession();
+      if (existing) window.location.href = "home.html";
 
-		document.getElementById("loginBtn").addEventListener("click", async () => {
-		  const email = document.getElementById("email").value.trim();
-		  const pass  = document.getElementById("password").value.trim();
-		  const errEl = document.getElementById("errorMsg");
+      document.getElementById("loginBtn").addEventListener("click", async () => {
+        const email = document.getElementById("email").value.trim();
+        const pass = document.getElementById("password").value.trim();
+        const errEl = document.getElementById("errorMsg");
 
-		  if (!email || !pass) { errEl.textContent = "กรุณากรอกอีเมลและรหัสผ่าน"; return; }
+        if (!email || !pass) {
+          errEl.textContent = "⚠️ กรุณากรอกอีเมลและรหัสผ่าน";
+          return;
+        }
 
-		  try {
-		    const res = await fetch("http://localhost:8080/api/login", {
-		      method: "POST",
-		      headers: { "Content-Type": "application/json" },
-		      body: JSON.stringify({ email: email, password: pass })
-		    });
-
-		    const data = await res.json();
-
-		    if (data.ok) {
-		      // ✅ บันทึกข้อมูล user ลง localStorage
-		      localStorage.setItem("auth", JSON.stringify({
-		        name: data.name,
-		        student_id: data.studentId,
-		        email: email
-		      }));
-
-		      window.location.href = "home.html";
-		    } else {
-		      errEl.textContent = data.message || "เข้าสู่ระบบไม่สำเร็จ";
-		    }
-
-		  } catch (err) {
-		    errEl.textContent = "เชื่อมต่อระบบเซิร์ฟเวอร์ไม่ได้";
-		    console.error(err);
-		  }
-		});
+        try {
+          const res = await login(email, pass);
+          if (res.ok) {
+            alert("✅ เข้าสู่ระบบสำเร็จ");
+            window.location.href = "home.html";
+          } else {
+            errEl.textContent = res.message || "เข้าสู่ระบบไม่สำเร็จ";
+          }
+        } catch (err) {
+          console.error(err);
+          errEl.textContent = "❌ เกิดข้อผิดพลาดในการเข้าสู่ระบบ";
+        }
+      });
     </script>
 </body>
 </html>
