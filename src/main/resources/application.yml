@@ -1,0 +1,26 @@
+server:
+  port: ${SERVER_PORT:8081}
+
+
+spring:
+  datasource:
+    # ✅ เลือกอย่างใดอย่างหนึ่งตามเคสของคุณ
+
+    # กรณี default instance (ไม่มีชื่อ instance) + พอร์ต 1433
+    url: jdbc:sqlserver://localhost:1433;databaseName=PetitionDB;encrypt=false;trustServerCertificate=true
+
+    # กรณีเป็น Named Instance เช่น SQLEXPRESS (ถ้าไม่มีพอร์ต 1433 แน่นอน ให้ระบุ instance แทน)
+    # url: jdbc:sqlserver://localhost\\SQLEXPRESS;databaseName=PetitionDB;encrypt=false;trustServerCertificate=true
+
+    username: sa          # หรือ petition_user หากสร้าง user แยก
+    password: Str0ng_Passw0rd!
+  jpa:
+    hibernate:
+      ddl-auto: update    # ช่วง dev ให้มันสร้าง/อัปเดตตารางให้ก่อน (ขึ้น prod ค่อยเปลี่ยนเป็น none + ใช้ Flyway)
+    properties:
+      hibernate.dialect: org.hibernate.dialect.SQLServerDialect
+
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE

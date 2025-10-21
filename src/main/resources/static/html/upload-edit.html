@@ -169,11 +169,11 @@
 		        studentName: session.name ?? ""
 		      };
 
-		      const response = await fetch("http://localhost:8081/api/petitions/upload", {
-		        method: "POST",
-		        headers: { "Content-Type": "application/json" },
-		        body: JSON.stringify(petitionData)
-		      });
+			  const response = await fetch("/api/petitions/upload", {
+			  	method: "POST",
+			  	headers: { "Content-Type": "application/json" },
+			  	body: JSON.stringify(petitionData)
+			  });
 
 		      if (!response.ok) throw new Error(`HTTP ${response.status}`);
 		      const result = await response.json();
@@ -198,9 +198,31 @@
 	    });
 	  });
 	</script>
+	<script>
+	         // ✅ อัปเดต popup ให้แสดงข้อมูล user
+	     document.addEventListener("DOMContentLoaded", () => {
+	     const session = getAuthSession();
+	     if (session) {
+	         const popupName = document.getElementById("popupName");
+	         const popupID = document.getElementById("popupID");
+	         if (popupName) popupName.textContent = session.name;
+	         if (popupID) popupID.textContent = session.student_id;
+	     }
+	     });
 
+	     // ✅ Popup เปิด-ปิด
+	     const accountBtn = document.getElementById("accountBtn");
+	     const popup = document.getElementById("popup");
+	     accountBtn.addEventListener("click", () => popup.classList.toggle("show"));
+	     document.addEventListener("click", e => {
+	         if (!accountBtn.contains(e.target) && !popup.contains(e.target)) popup.classList.remove("show");
+	     });
 
-	    
+	     // ✅ Logout ปลอดภัย
+	     document.getElementById("logoutBtn").addEventListener("click", () => {
+	         if (confirm("ต้องการออกจากระบบหรือไม่?")) logout("login.html");
+	     });
+	</script>
     
 </body>
 </html>

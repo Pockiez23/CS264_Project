@@ -1,0 +1,56 @@
+services:
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: mssql
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: ${MSSQL_SA_PASSWORD:-Str0ng_Passw0rd!}
+      MSSQL_PID: Express
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql_data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD", "/opt/mssql-tools18/bin/sqlcmd", "-C", "-S", "localhost,1433", "-U", "sa", "-P", "${MSSQL_SA_PASSWORD:-Str0ng_Passw0rd!}", "-Q", "SELECT 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+
+  # init แบบไม่พึ่งไฟล์ .sh (กันปัญหา CRLF/BOM)
+  mssql-init:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    depends_on:
+      mssql:
+        condition: service_healthy
+    environment:
+      SA_PASSWORD: ${MSSQL_SA_PASSWORD:-Str0ng_Passw0rd!}
+      MSSQL_DB: ${MSSQL_DB:-PetitionDB}
+    entrypoint:
+      - /bin/sh
+      - -lc
+      - >
+        echo "⏳ waiting 5s..." && sleep 5 &&
+        /opt/mssql-tools18/bin/sqlcmd -C -S mssql,1433 -U sa -P "$${SA_PASSWORD}"
+        -Q "IF DB_ID('$${MSSQL_DB}') IS NULL CREATE DATABASE [$${MSSQL_DB}];"
+        && echo "✅ DB ready"
+
+  api:
+    build:
+      context: .
+      dockerfile: backend.Dockerfile
+    container_name: api
+    depends_on:
+      mssql:
+        condition: service_healthy
+      mssql-init:
+        condition: service_completed_successfully
+    environment:
+      SERVER_PORT: ${API_PORT:-8081}
+      SPRING_DATASOURCE_URL: jdbc:sqlserver://mssql:1433;databaseName=${MSSQL_DB:-PetitionDB};encrypt=false;trustServerCertificate=true
+      SPRING_DATASOURCE_USERNAME: sa
+      SPRING_DATASOURCE_PASSWORD: ${MSSQL_SA_PASSWORD:-Str0ng_Passw0rd!}
+    ports:
+      - "${API_PORT:-8081}:${API_PORT:-8081}"
+
+volumes:
+  mssql_data:

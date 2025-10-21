@@ -1,0 +1,9 @@
+**/target
+**/build
+**/.idea
+**/.vscode
+**/.DS_Store
+**/node_modules
+**/.git
+**/.gitignore
+
