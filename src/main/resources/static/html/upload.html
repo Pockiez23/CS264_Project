@@ -51,12 +51,6 @@
             <a href="home.html" class="back-btn">← Back to Home</a>
 
             <form id="petitionForm" class="petition-form" novalidate>
-                <div class="upload-box" id="uploadBox">
-                    <div id="uploadBoxContent">
-                        <img src="/Photo/file-upload-export-icon.png" alt="Upload Icon">
-                        <p>Upload File PDF, PNG, JPG</p>
-                    </div>
-                </div>
                 <input type="file" id="fileUpload" name="file" accept=".pdf,.png,.jpg,.jpeg" hidden required>
 
                 <div class="form-card">
@@ -97,6 +91,14 @@
                             <input type="email" id="email" name="email" placeholder="name@example.com" required>
                         </div>
                         <div class="form-group full">
+                            <label for="address">ที่อยู่สำหรับติดต่อ</label>
+                            <textarea id="address" name="address" rows="3" placeholder="กรอกที่อยู่ปัจจุบัน" required></textarea>
+                        </div>
+                        <div class="form-group full">
+                            <label for="purpose">ความประสงค์ที่ยื่นคำร้อง</label>
+                            <textarea id="purpose" name="purpose" rows="3" placeholder="ระบุความประสงค์หลักของคำร้อง" required></textarea>
+                        </div>
+                        <div class="form-group full">
                             <label for="details">รายละเอียดคำร้อง</label>
                             <textarea id="details" name="details" rows="4" placeholder="กรอกรายละเอียดคำร้อง" required></textarea>
                         </div>
@@ -105,6 +107,7 @@
                     <div class="file-section">
                         <label for="fileUpload">เอกสารแนบคำร้อง</label>
                         <div class="file-upload">
+                            <button type="button" id="chooseFileBtn" class="secondary-btn choose-file-btn">เลือกไฟล์</button>
                             <span id="fileName" class="file-name">ยังไม่ได้เลือกไฟล์</span>
                         </div>
                         <p class="file-hint">รองรับไฟล์ .PDF, .PNG, .JPG สูงสุด 10 MB</p>
@@ -135,8 +138,7 @@ Technology Thammasat Official</a></p>
 
         const petitionForm = document.getElementById("petitionForm");
         const fileInput = document.getElementById("fileUpload");
-        const uploadBox = document.getElementById("uploadBox");
-        const uploadBoxContent = document.getElementById("uploadBoxContent");
+        const chooseFileBtn = document.getElementById("chooseFileBtn");
         const fileNameDisplay = document.getElementById("fileName");
 
         document.addEventListener("DOMContentLoaded", () => {
@@ -167,12 +169,11 @@ Technology Thammasat Official</a></p>
             }
         }
 
-        uploadBox.addEventListener("click", () => fileInput.click());
+        chooseFileBtn?.addEventListener("click", () => fileInput.click());
 
         fileInput.addEventListener("change", () => {
             const file = fileInput.files[0];
             if (!file) {
-                uploadBoxContent.innerHTML = `<img src="/Photo/file-upload-export-icon.png" alt="Upload Icon"><p>Upload File PDF, PNG, JPG</p>`;
                 fileNameDisplay.textContent = "ยังไม่ได้เลือกไฟล์";
                 return;
             }
@@ -181,7 +182,6 @@ Technology Thammasat Official</a></p>
             if (!validTypes.includes(file.type)) {
                 alert("อัปโหลดได้เฉพาะไฟล์ PDF, PNG, หรือ JPG เท่านั้น");
                 fileInput.value = "";
-                uploadBoxContent.innerHTML = `<img src="/Photo/file-upload-export-icon.png" alt="Upload Icon"><p>Upload File PDF, PNG, JPG</p>`;
                 fileNameDisplay.textContent = "ยังไม่ได้เลือกไฟล์";
                 return;
             }
@@ -189,24 +189,10 @@ Technology Thammasat Official</a></p>
             if (file.size > 10 * 1024 * 1024) {
                 alert("ไฟล์มีขนาดใหญ่เกิน 10 MB");
                 fileInput.value = "";
-                uploadBoxContent.innerHTML = `<img src="/Photo/file-upload-export-icon.png" alt="Upload Icon"><p>Upload File PDF, PNG, JPG</p>`;
                 fileNameDisplay.textContent = "ยังไม่ได้เลือกไฟล์";
                 return;
             }
 
-            uploadBoxContent.innerHTML = "";
-            if (file.type === "application/pdf") {
-                uploadBoxContent.innerHTML = `<img src="https://cdn-icons-png.flaticon.com/512/337/337946.png" alt="PDF" class="preview-pdf"><p>${file.name}</p>`;
-            } else {
-                const img = document.createElement("img");
-                img.className = "preview-image";
-                img.alt = "Preview";
-                img.src = URL.createObjectURL(file);
-                uploadBoxContent.appendChild(img);
-                const label = document.createElement("p");
-                label.textContent = file.name;
-                uploadBoxContent.appendChild(label);
-            }
             fileNameDisplay.textContent = file.name;
         });
 
@@ -245,7 +231,6 @@ Technology Thammasat Official</a></p>
                 petitionForm.reset();
                 populateDefaults();
                 fileInput.value = "";
-                uploadBoxContent.innerHTML = `<img src="/Photo/file-upload-export-icon.png" alt="Upload Icon"><p>Upload File PDF, PNG, JPG</p>`;
                 fileNameDisplay.textContent = "ยังไม่ได้เลือกไฟล์";
             }
         });

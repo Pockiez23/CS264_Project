@@ -95,6 +95,14 @@
                     <input type="email" id="email" name="email" required>
                   </div>
                   <div class="form-field">
+                    <label for="address">ที่อยู่สำหรับติดต่อ</label>
+                    <textarea id="address" name="address" rows="3" required></textarea>
+                  </div>
+                  <div class="form-field">
+                    <label for="purpose">ความประสงค์ที่ยื่นคำร้อง</label>
+                    <textarea id="purpose" name="purpose" rows="3" required></textarea>
+                  </div>
+                  <div class="form-field">
                     <label for="details">รายละเอียดคำร้อง</label>
                     <textarea id="details" name="details" rows="4" required></textarea>
                   </div>
@@ -168,6 +176,8 @@ Technology Thammasat Official</a></p>
             document.getElementById("advisorName").value = data.advisorName || "";
             document.getElementById("phoneNumber").value = data.phoneNumber || "";
             document.getElementById("email").value = data.email || session.email || "";
+            document.getElementById("address").value = data.address || "";
+            document.getElementById("purpose").value = data.purpose || "";
             document.getElementById("details").value = data.details || "";
 
             document.getElementById("studentName").readOnly = true;

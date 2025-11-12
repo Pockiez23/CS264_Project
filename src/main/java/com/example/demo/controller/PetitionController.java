@@ -36,12 +36,16 @@ public class PetitionController {
             @RequestParam("phoneNumber") String phoneNumber,
             @RequestParam("email") String email,
             @RequestParam("details") String details,
+            @RequestParam(value = "address", required = false) String address,
+            @RequestParam(value = "purpose", required = false) String purpose,
             @RequestParam(value = "file", required = false) MultipartFile file
     ) throws IOException {
         Petition petition = new Petition();
         petition.setAdvisorName(advisorName);
         petition.setCurriculum(curriculum);
         petition.setDetails(details);
+        petition.setAddress(address);
+        petition.setPurpose(purpose);
         petition.setEmail(email);
         petition.setMajor(major);
         petition.setPetitionDate(petitionDate);
@@ -80,12 +84,16 @@ public class PetitionController {
             @RequestParam("phoneNumber") String phoneNumber,
             @RequestParam("email") String email,
             @RequestParam("details") String details,
+            @RequestParam(value = "address", required = false) String address,
+            @RequestParam(value = "purpose", required = false) String purpose,
             @RequestParam(value = "file", required = false) MultipartFile file
     ) throws IOException {
         Petition petition = new Petition();
         petition.setAdvisorName(advisorName);
         petition.setCurriculum(curriculum);
         petition.setDetails(details);
+        petition.setAddress(address);
+        petition.setPurpose(purpose);
         petition.setEmail(email);
         petition.setMajor(major);
         petition.setPetitionDate(petitionDate);

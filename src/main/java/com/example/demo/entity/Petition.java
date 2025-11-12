@@ -45,6 +45,12 @@ public class Petition {
     @Column(name = "details", columnDefinition = "NVARCHAR(MAX)")
     private String details;
 
+    @Column(name = "address", columnDefinition = "NVARCHAR(MAX)")
+    private String address;
+
+    @Column(name = "purpose", columnDefinition = "NVARCHAR(MAX)")
+    private String purpose;
+
     @Column(name = "file_path")
     private String filePath;
 
@@ -95,6 +101,12 @@ public class Petition {
 
     public String getDetails() { return details; }
     public void setDetails(String details) { this.details = details; }
+
+    public String getAddress() { return address; }
+    public void setAddress(String address) { this.address = address; }
+
+    public String getPurpose() { return purpose; }
+    public void setPurpose(String purpose) { this.purpose = purpose; }
 
     public String getFilePath() { return filePath; }
     public void setFilePath(String filePath) { this.filePath = filePath; }

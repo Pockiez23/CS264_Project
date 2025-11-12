@@ -55,6 +55,8 @@ public class PetitionService {
         existing.setAdvisorName(updated.getAdvisorName());
         existing.setCurriculum(updated.getCurriculum());
         existing.setDetails(updated.getDetails());
+        existing.setAddress(updated.getAddress());
+        existing.setPurpose(updated.getPurpose());
         existing.setEmail(updated.getEmail());
         existing.setMajor(updated.getMajor());
         existing.setPetitionDate(updated.getPetitionDate());
