@@ -40,22 +40,83 @@
             <a href="#">เจ้าหน้าที่ฝ่ายวิชาการภาคพิเศษ</a>
             <a href="#">เจ้าหน้าที่คณะวิทยาศาสตร์ฯ</a>
             <a href="form-list.html">ตัวอย่างแบบฟอร์มคำร้อง</a>
-            <a href="upload.html">อัพโหลดแบบฟอร์มคำร้อง</a>
+            <a href="upload.html" class="active">อัพโหลดแบบฟอร์มคำร้อง</a>
         </nav>
     </header>
 
 
     <!-- 🔸 Main Content -->
     <main>
-        <a href="home.html" class="back-btn">← Back to Home</a>
-        <div class="upload-box" id="uploadBox">
-            <label for="fileUpload">
-                <img src="/Photo/file-upload-export-icon.png" alt="Upload Icon">
-                <p>Upload File PDF, PNG, JPG</p>
-            </label>
-            <input type="file" id="fileUpload" accept=".pdf,.png,.jpg,.jpeg" hidden>
+        <div class="content-wrapper">
+            <a href="home.html" class="back-btn">← Back to Home</a>
+
+            <form id="petitionForm" class="petition-form" novalidate>
+                <div class="upload-box" id="uploadBox">
+                    <div id="uploadBoxContent">
+                        <img src="/Photo/file-upload-export-icon.png" alt="Upload Icon">
+                        <p>Upload File PDF, PNG, JPG</p>
+                    </div>
+                </div>
+                <input type="file" id="fileUpload" name="file" accept=".pdf,.png,.jpg,.jpeg" hidden required>
+
+                <div class="form-card">
+                    <h2>แบบฟอร์มคำร้องนักศึกษา</h2>
+                    <p class="form-description">กรอกข้อมูลให้ครบถ้วนและตรวจสอบก่อนส่งคำร้อง</p>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="petitionDate">วันที่</label>
+                            <input type="date" id="petitionDate" name="petitionDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="studentName">ชื่อ-สกุล</label>
+                            <input type="text" id="studentName" name="studentName" placeholder="กรอกชื่อ-สกุล" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="studentId">รหัสนักศึกษา</label>
+                            <input type="text" id="studentId" name="studentId" placeholder="กรอกรหัสนักศึกษา" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="curriculum">หลักสูตร</label>
+                            <input type="text" id="curriculum" name="curriculum" placeholder="เช่น วิทยาศาสตร์บัณฑิต" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="major">สาขาวิชา</label>
+                            <input type="text" id="major" name="major" placeholder="กรอกสาขาวิชา" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="advisorName">อาจารย์ที่ปรึกษา</label>
+                            <input type="text" id="advisorName" name="advisorName" placeholder="ใส่ชื่ออาจารย์ที่ปรึกษา" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phoneNumber">เบอร์โทรศัพท์</label>
+                            <input type="tel" id="phoneNumber" name="phoneNumber" placeholder="0XXXXXXXXX" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">อีเมล</label>
+                            <input type="email" id="email" name="email" placeholder="name@example.com" required>
+                        </div>
+                        <div class="form-group full">
+                            <label for="details">รายละเอียดคำร้อง</label>
+                            <textarea id="details" name="details" rows="4" placeholder="กรอกรายละเอียดคำร้อง" required></textarea>
+                        </div>
+                    </div>
+
+                    <div class="file-section">
+                        <label for="fileUpload">เอกสารแนบคำร้อง</label>
+                        <div class="file-upload">
+                            <span id="fileName" class="file-name">ยังไม่ได้เลือกไฟล์</span>
+                        </div>
+                        <p class="file-hint">รองรับไฟล์ .PDF, .PNG, .JPG สูงสุด 10 MB</p>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="upload-btn">ส่งคำร้อง</button>
+                    <button type="button" id="resetBtn" class="secondary-btn">ล้างฟอร์ม</button>
+                </div>
+            </form>
         </div>
-        <button id="uploadBtn" class="upload-btn">อัปโหลดไฟล์</button>    
     </main>
 
 
@@ -65,112 +126,150 @@
         เลขที่ 99 หมู่ 18 ถนนพหลโยธิน ต.คลองหนึ่ง อ.คลองหลวง ปทุมธานี 12120<br>
         โทรศัพท์ : 0-2564-4440-79 ต่อ 2010</p>
         <p>Email: <a href="mailto:SCITECH.THAMMASAT@GMAIL.COM">scitech.thammasat@gmail.com</a> |
-           Facebook: <a href="https://www.facebook.com/ScienceThammasat/" target="_blank" rel="noopener noreferrer">Science and Technology Thammasat Official</a></p>
+           Facebook: <a href="https://www.facebook.com/ScienceThammasat/" target="_blank" rel="noopener noreferrer">Science and
+Technology Thammasat Official</a></p>
     </footer>
     <script src="auth.js"></script>
     <script>
-        // บังคับให้ต้องล็อกอินก่อน
         const session = requireAuth("login.html");
 
-        // (ออปชัน) ใส่ชื่อ-รหัสนักศึกษาในหัวเว็บ
-        document.addEventListener("DOMContentLoaded", () => {
-            fillUserHeader(); // สำหรับหัวมุมขวา
-        });
-    </script>
-    <script>
-        const uploadBtn = document.getElementById("uploadBtn");
+        const petitionForm = document.getElementById("petitionForm");
         const fileInput = document.getElementById("fileUpload");
         const uploadBox = document.getElementById("uploadBox");
+        const uploadBoxContent = document.getElementById("uploadBoxContent");
+        const fileNameDisplay = document.getElementById("fileName");
 
-        // แสดงตัวอย่างไฟล์เมื่อเลือก
-        fileInput.addEventListener("change", function () {
-            const file = this.files[0];
-            if (!file) return;
+        document.addEventListener("DOMContentLoaded", () => {
+            fillUserHeader();
+            setupPopup();
+            populateDefaults();
+        });
+
+        function populateDefaults() {
+            const today = new Date().toISOString().split("T")[0];
+            const dateInput = document.getElementById("petitionDate");
+            if (!dateInput.value) {
+                dateInput.value = today;
+            }
+            const studentNameInput = document.getElementById("studentName");
+            const studentIdInput = document.getElementById("studentId");
+            const emailInput = document.getElementById("email");
+            if (session?.name) {
+                studentNameInput.value = session.name;
+                studentNameInput.readOnly = true;
+            }
+            if (session?.student_id) {
+                studentIdInput.value = session.student_id;
+                studentIdInput.readOnly = true;
+            }
+            if (session?.email) {
+                emailInput.value = session.email;
+            }
+        }
+
+        uploadBox.addEventListener("click", () => fileInput.click());
+
+        fileInput.addEventListener("change", () => {
+            const file = fileInput.files[0];
+            if (!file) {
+                uploadBoxContent.innerHTML = `<img src="/Photo/file-upload-export-icon.png" alt="Upload Icon"><p>Upload File PDF, PNG, JPG</p>`;
+                fileNameDisplay.textContent = "ยังไม่ได้เลือกไฟล์";
+                return;
+            }
 
             const validTypes = ["application/pdf", "image/png", "image/jpeg"];
             if (!validTypes.includes(file.type)) {
                 alert("อัปโหลดได้เฉพาะไฟล์ PDF, PNG, หรือ JPG เท่านั้น");
                 fileInput.value = "";
+                uploadBoxContent.innerHTML = `<img src="/Photo/file-upload-export-icon.png" alt="Upload Icon"><p>Upload File PDF, PNG, JPG</p>`;
+                fileNameDisplay.textContent = "ยังไม่ได้เลือกไฟล์";
                 return;
             }
 
-            // เคลียร์ของเดิมใน upload box
-            uploadBox.innerHTML = "";
+            if (file.size > 10 * 1024 * 1024) {
+                alert("ไฟล์มีขนาดใหญ่เกิน 10 MB");
+                fileInput.value = "";
+                uploadBoxContent.innerHTML = `<img src="/Photo/file-upload-export-icon.png" alt="Upload Icon"><p>Upload File PDF, PNG, JPG</p>`;
+                fileNameDisplay.textContent = "ยังไม่ได้เลือกไฟล์";
+                return;
+            }
 
-            // ถ้าเป็นภาพ → แสดงภาพจริง
-            if (file.type === "image/png" || file.type === "image/jpeg") {
-                const img = document.createElement("img");
-                img.src = URL.createObjectURL(file);
-                img.alt = "Preview";
-                img.classList.add("preview-image");
-                uploadBox.appendChild(img);
+            uploadBoxContent.innerHTML = "";
+            if (file.type === "application/pdf") {
+                uploadBoxContent.innerHTML = `<img src="https://cdn-icons-png.flaticon.com/512/337/337946.png" alt="PDF" class="preview-pdf"><p>${file.name}</p>`;
             } else {
-                // ถ้าเป็น PDF → แสดง icon PDF
-                const pdfIcon = document.createElement("img");
-                pdfIcon.src = "337946.png";
-                pdfIcon.alt = "PDF Icon";
-                pdfIcon.classList.add("preview-pdf");
-                uploadBox.appendChild(pdfIcon);
+                const img = document.createElement("img");
+                img.className = "preview-image";
+                img.alt = "Preview";
+                img.src = URL.createObjectURL(file);
+                uploadBoxContent.appendChild(img);
+                const label = document.createElement("p");
+                label.textContent = file.name;
+                uploadBoxContent.appendChild(label);
             }
-
-            const fileName = document.createElement("p");
-            fileName.textContent = `ไฟล์ที่เลือก: ${file.name}`;
-            fileName.classList.add("file-name");
-            uploadBox.appendChild(fileName);
+            fileNameDisplay.textContent = file.name;
         });
 
-        // ปุ่มอัปโหลด
-        uploadBtn.addEventListener("click", function () {
-            const file = fileInput.files[0];
-            if (!file) {
-                alert("กรุณาเลือกไฟล์ก่อนทำการอัปโหลด!");
+        petitionForm.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            if (!petitionForm.checkValidity()) {
+                petitionForm.reportValidity();
                 return;
-            }       
-
-            const validTypes = ["application/pdf", "image/png", "image/jpeg"];
-            if (!validTypes.includes(file.type)) {
-                alert("อัปโหลดได้เฉพาะไฟล์ PDF, PNG, หรือ JPG เท่านั้น");
+            }
+            if (!fileInput.files[0]) {
+                alert("กรุณาเลือกไฟล์คำร้องก่อนส่ง");
                 return;
             }
 
-            // ✅ เก็บชื่อไฟล์ + URL preview
-            const fileURL = URL.createObjectURL(file);
-            localStorage.setItem("uploadedFileName", file.name);
-            localStorage.setItem("uploadedFileURL", fileURL);
-
-            window.location.href = "upload-edit.html";
+            const formData = new FormData(petitionForm);
+            try {
+                const response = await fetch("/api/petitions/upload", {
+                    method: "POST",
+                    body: formData
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                const result = await response.json();
+                localStorage.setItem("lastCreatedPetitionId", result.id);
+                alert("✅ ส่งคำร้องเรียบร้อยแล้ว");
+                window.location.href = "upload-success.html";
+            } catch (error) {
+                console.error(error);
+                alert("❌ ไม่สามารถส่งคำร้องได้ กรุณาลองอีกครั้ง");
+            }
         });
-        
-        uploadBox.addEventListener("click", function () {
-            fileInput.click();
+
+        document.getElementById("resetBtn").addEventListener("click", () => {
+            if (confirm("ต้องการล้างข้อมูลทั้งหมดหรือไม่?")) {
+                petitionForm.reset();
+                populateDefaults();
+                fileInput.value = "";
+                uploadBoxContent.innerHTML = `<img src="/Photo/file-upload-export-icon.png" alt="Upload Icon"><p>Upload File PDF, PNG, JPG</p>`;
+                fileNameDisplay.textContent = "ยังไม่ได้เลือกไฟล์";
+            }
         });
 
-        // ✅ อัปเดต popup ให้แสดงข้อมูล user
-        document.addEventListener("DOMContentLoaded", () => {
-        const session = getAuthSession();
-        if (session) {
+        function setupPopup() {
             const popupName = document.getElementById("popupName");
             const popupID = document.getElementById("popupID");
-            if (popupName) popupName.textContent = session.name;
-            if (popupID) popupID.textContent = session.student_id;
+            if (popupName) popupName.textContent = session.name || "";
+            if (popupID) popupID.textContent = session.student_id || "";
+            const accountBtn = document.getElementById("accountBtn");
+            const popup = document.getElementById("popup");
+            if (!accountBtn || !popup) return;
+            accountBtn.addEventListener("click", () => popup.classList.toggle("show"));
+            document.addEventListener("click", e => {
+                if (!accountBtn.contains(e.target) && !popup.contains(e.target)) {
+                    popup.classList.remove("show");
+                }
+            });
+            document.getElementById("logoutBtn")?.addEventListener("click", () => {
+                if (confirm("ต้องการออกจากระบบหรือไม่?")) logout("login.html");
+            });
         }
-        });
-
-        // ✅ Popup เปิด-ปิด
-        const accountBtn = document.getElementById("accountBtn");
-        const popup = document.getElementById("popup");
-        accountBtn.addEventListener("click", () => popup.classList.toggle("show"));
-        document.addEventListener("click", e => {
-            if (!accountBtn.contains(e.target) && !popup.contains(e.target)) popup.classList.remove("show");
-        });
-
-        // ✅ Logout ปลอดภัย
-        document.getElementById("logoutBtn").addEventListener("click", () => {
-            if (confirm("ต้องการออกจากระบบหรือไม่?")) logout("login.html");
-        });
-
     </script>
-    
+
 
 </body>
 </html>
