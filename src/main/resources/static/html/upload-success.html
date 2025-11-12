@@ -46,6 +46,11 @@
     <a href="home.html" class="back-btn">← Back to Home</a>
     <div class="success-msg">
       <h2>อัปโหลดคำร้องเสร็จเรียบร้อย</h2>
+      <p>หมายเลขคำร้องของคุณคือ <strong id="petitionId">-</strong></p>
+      <div class="success-actions">
+        <a id="editLink" class="btn btn-submit" href="upload-edit.html">แก้ไขคำร้อง</a>
+        <a class="btn btn-save" href="home.html">กลับหน้าแรก</a>
+      </div>
     </div>
   </main>
 
@@ -59,40 +64,39 @@
     </footer>
     <script src="auth.js"></script>
     <script>
-        // บังคับให้ต้องล็อกอินก่อน
-        const session = requireAuth("login.html");
+      const session = requireAuth("login.html");
 
-        // (ออปชัน) ใส่ชื่อ-รหัสนักศึกษาในหัวเว็บ
-        document.addEventListener("DOMContentLoaded", () => {
-            fillUserHeader(); // สำหรับหัวมุมขวา
-        });
-    </script>
-    <script>
-        // ✅ อัปเดต popup ให้แสดงข้อมูล user
-        document.addEventListener("DOMContentLoaded", () => {
-        const session = getAuthSession();
-        if (session) {
-            const popupName = document.getElementById("popupName");
-            const popupID = document.getElementById("popupID");
-            if (popupName) popupName.textContent = session.name;
-            if (popupID) popupID.textContent = session.student_id;
+      document.addEventListener("DOMContentLoaded", () => {
+        fillUserHeader();
+        setupPopup();
+        const petitionId = localStorage.getItem("lastCreatedPetitionId");
+        if (petitionId) {
+          document.getElementById("petitionId").textContent = petitionId;
+          const editLink = document.getElementById("editLink");
+          editLink.href = `upload-edit.html?id=${petitionId}`;
         }
-        });
+      });
 
-        // ✅ Popup เปิด-ปิด
+      function setupPopup() {
+        const popupName = document.getElementById("popupName");
+        const popupID = document.getElementById("popupID");
+        if (popupName) popupName.textContent = session.name || "";
+        if (popupID) popupID.textContent = session.student_id || "";
         const accountBtn = document.getElementById("accountBtn");
         const popup = document.getElementById("popup");
+        if (!accountBtn || !popup) return;
         accountBtn.addEventListener("click", () => popup.classList.toggle("show"));
         document.addEventListener("click", e => {
-            if (!accountBtn.contains(e.target) && !popup.contains(e.target)) popup.classList.remove("show");
+          if (!accountBtn.contains(e.target) && !popup.contains(e.target)) {
+            popup.classList.remove("show");
+          }
         });
-
-        // ✅ Logout ปลอดภัย
-        document.getElementById("logoutBtn").addEventListener("click", () => {
-            if (confirm("ต้องการออกจากระบบหรือไม่?")) logout("login.html");
+        document.getElementById("logoutBtn")?.addEventListener("click", () => {
+          if (confirm("ต้องการออกจากระบบหรือไม่?")) logout("login.html");
         });
+      }
     </script>
-    
-    
+
+
 </body>
 </html>

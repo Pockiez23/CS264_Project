@@ -1,6 +1,7 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -25,6 +26,33 @@ public class Petition {
 
     @Column(name = "student_name")
     private String studentName;
+
+    @Column(name = "petition_date")
+    private LocalDate petitionDate;
+
+    @Column(name = "curriculum")
+    private String curriculum;
+
+    @Column(name = "major")
+    private String major;
+
+    @Column(name = "phone_number")
+    private String phoneNumber;
+
+    @Column(name = "email")
+    private String email;
+
+    @Column(name = "details", columnDefinition = "NVARCHAR(MAX)")
+    private String details;
+
+    @Column(name = "address", columnDefinition = "NVARCHAR(MAX)")
+    private String address;
+
+    @Column(name = "purpose", columnDefinition = "NVARCHAR(MAX)")
+    private String purpose;
+
+    @Column(name = "file_path")
+    private String filePath;
 
     @Column(name = "upload_date")
     private LocalDateTime uploadDate;
@@ -55,6 +83,33 @@ public class Petition {
 
     public String getStudentName() { return studentName; }
     public void setStudentName(String studentName) { this.studentName = studentName; }
+
+    public LocalDate getPetitionDate() { return petitionDate; }
+    public void setPetitionDate(LocalDate petitionDate) { this.petitionDate = petitionDate; }
+
+    public String getCurriculum() { return curriculum; }
+    public void setCurriculum(String curriculum) { this.curriculum = curriculum; }
+
+    public String getMajor() { return major; }
+    public void setMajor(String major) { this.major = major; }
+
+    public String getPhoneNumber() { return phoneNumber; }
+    public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
+
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+
+    public String getDetails() { return details; }
+    public void setDetails(String details) { this.details = details; }
+
+    public String getAddress() { return address; }
+    public void setAddress(String address) { this.address = address; }
+
+    public String getPurpose() { return purpose; }
+    public void setPurpose(String purpose) { this.purpose = purpose; }
+
+    public String getFilePath() { return filePath; }
+    public void setFilePath(String filePath) { this.filePath = filePath; }
 
     public LocalDateTime getUploadDate() { return uploadDate; }
     public void setUploadDate(LocalDateTime uploadDate) { this.uploadDate = uploadDate; }
