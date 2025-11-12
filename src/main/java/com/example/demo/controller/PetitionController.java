@@ -3,9 +3,13 @@ package com.example.demo.controller;
 import com.example.demo.entity.Petition;
 import com.example.demo.repository.PetitionRepository;
 import com.example.demo.service.PetitionService;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -22,11 +26,30 @@ public class PetitionController {
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<Petition> uploadPetition(@RequestBody Petition petition) {
-        if (petition.getStatus() == null || petition.getStatus().isBlank()) {
-            petition.setStatus("รอคำพิจารณา");
-        }
-        Petition saved = service.save(petition);
+    public ResponseEntity<Petition> uploadPetition(
+            @RequestParam("petitionDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate petitionDate,
+            @RequestParam("studentName") String studentName,
+            @RequestParam("studentId") String studentId,
+            @RequestParam("curriculum") String curriculum,
+            @RequestParam("major") String major,
+            @RequestParam("advisorName") String advisorName,
+            @RequestParam("phoneNumber") String phoneNumber,
+            @RequestParam("email") String email,
+            @RequestParam("details") String details,
+            @RequestParam(value = "file", required = false) MultipartFile file
+    ) throws IOException {
+        Petition petition = new Petition();
+        petition.setAdvisorName(advisorName);
+        petition.setCurriculum(curriculum);
+        petition.setDetails(details);
+        petition.setEmail(email);
+        petition.setMajor(major);
+        petition.setPetitionDate(petitionDate);
+        petition.setPhoneNumber(phoneNumber);
+        petition.setStudentId(studentId);
+        petition.setStudentName(studentName);
+
+        Petition saved = service.create(petition, file);
         return ResponseEntity.ok(saved);
     }
 
@@ -35,8 +58,42 @@ public class PetitionController {
         return ResponseEntity.ok(petitionRepository.findAll());
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Petition> getPetition(@PathVariable Long id) {
+        return ResponseEntity.ok(service.get(id));
+    }
+
     @GetMapping("/me")
     public ResponseEntity<List<Petition>> myPetitions(@RequestParam String studentId){
         return ResponseEntity.ok(service.listByStudent(studentId));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Petition> updatePetition(
+            @PathVariable Long id,
+            @RequestParam("petitionDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate petitionDate,
+            @RequestParam("studentName") String studentName,
+            @RequestParam("studentId") String studentId,
+            @RequestParam("curriculum") String curriculum,
+            @RequestParam("major") String major,
+            @RequestParam("advisorName") String advisorName,
+            @RequestParam("phoneNumber") String phoneNumber,
+            @RequestParam("email") String email,
+            @RequestParam("details") String details,
+            @RequestParam(value = "file", required = false) MultipartFile file
+    ) throws IOException {
+        Petition petition = new Petition();
+        petition.setAdvisorName(advisorName);
+        petition.setCurriculum(curriculum);
+        petition.setDetails(details);
+        petition.setEmail(email);
+        petition.setMajor(major);
+        petition.setPetitionDate(petitionDate);
+        petition.setPhoneNumber(phoneNumber);
+        petition.setStudentId(studentId);
+        petition.setStudentName(studentName);
+
+        Petition updated = service.update(id, petition, file);
+        return ResponseEntity.ok(updated);
     }
 }

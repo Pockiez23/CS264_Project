@@ -2,7 +2,6 @@ body {
     height: 100%;
     margin: 0;
     font-family: 'Kanit', sans-serif;
-    margin: 0;
     background-color: #fff;
 }
 
@@ -60,7 +59,8 @@ body {
     transition: 0.3s;
 }
 
-.menu-bar a:hover {
+.menu-bar a:hover,
+.menu-bar a.active {
     color: #ff0000;
     text-decoration: underline;
 }
@@ -130,14 +130,24 @@ body {
 /* ===== Main Layout ===== */
 main {
     flex: 1;
-    padding: 50px 80px;
+    padding: 40px 80px 60px;
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
+    flex-direction: column;
+    align-items: center;
+    gap: 25px;
+}
+
+.content-wrapper {
+    width: 100%;
+    max-width: 960px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 /* ===== ปุ่มย้อนกลับ ===== */
 .back-btn {
+    align-self: flex-start;
     display: inline-block;
     background-color: #e6e6e6;
     color: #000000;
@@ -147,7 +157,7 @@ main {
     font-weight: 500;
     font-size: 16px;
     margin-bottom: 20px;
-    transition: background 0.3s, color 0.3s;
+    transition: background 0.3s, color 0.3s, transform 0.3s;
     cursor: pointer;
 }
 
@@ -157,62 +167,204 @@ main {
     transform: translateY(-2px);
 }
 
+.petition-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 25px;
+}
+
 .upload-box {
     background-color: #f0f0f0;
-    width: 60%;
-    margin: 0 auto 20px auto;
+    width: 100%;
     border-radius: 10px;
-    padding: 100px 40px;
+    padding: 80px 40px;
     transition: 0.3s;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     text-align: center;
+    border: 2px dashed transparent;
 }
+
 .upload-box:hover {
     background-color: #e6e6e6;
     cursor: pointer;
+    border-color: #ffa500;
 }
 
 .upload-box img {
-    width: 300px;
+    width: 220px;
     margin-bottom: 10px;
 }
+
 .upload-box p {
     font-size: 20px;
     font-weight: 600;
 }
 
-/* ปุ่มอัปโหลด */
+.form-card {
+    width: 100%;
+    background-color: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #ececec;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+    padding: 30px 40px;
+}
+
+.form-card h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #333;
+}
+
+.form-description {
+    font-size: 16px;
+    color: #555;
+    margin-bottom: 20px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 18px 30px;
+    width: 100%;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group.full {
+    grid-column: 1 / -1;
+}
+
+.form-group label {
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #333;
+}
+
+.form-group input,
+.form-group textarea {
+    padding: 10px 12px;
+    border: 1.5px solid #ccc;
+    border-radius: 8px;
+    font-family: 'Kanit', sans-serif;
+    font-size: 16px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #ff7a00;
+    box-shadow: 0 0 0 3px rgba(255, 154, 0, 0.2);
+}
+
+textarea {
+    resize: vertical;
+    min-height: 110px;
+}
+
+.file-section {
+    margin-top: 20px;
+    padding: 18px;
+    border: 1.5px dashed #d9d9d9;
+    border-radius: 10px;
+    background-color: #fafafa;
+}
+
+.file-section label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.file-upload {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.file-upload input[type="file"] {
+    font-family: 'Kanit', sans-serif;
+}
+
+.file-name {
+    font-size: 16px;
+    font-weight: 500;
+    color: #444;
+}
+
+.file-hint {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #777;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    width: 100%;
+    margin-top: 10px;
+}
+
 .upload-btn {
     background-color: #ff0000;
     color: white;
     border: none;
     border-radius: 8px;
-    padding: 10px 25px;
+    padding: 10px 32px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.upload-btn:hover {
+    background-color: #cc0000;
+    transform: translateY(-1px);
+}
+
+.secondary-btn {
+    background-color: #e6e6e6;
+    color: #333;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 24px;
     font-size: 16px;
     font-weight: 500;
     cursor: pointer;
-    transition: 0.3s;
+    transition: background-color 0.3s, color 0.3s;
 }
-.upload-btn:hover { background-color: #cc0000; }
+
+.secondary-btn:hover {
+    background-color: #cccccc;
+    color: #000;
+}
 
 /* ===== Preview ===== */
 .preview-image {
     width: 50%;
-    max-width: 300px;
+    max-width: 280px;
     border-radius: 10px;
     margin-bottom: 15px;
+    object-fit: contain;
 }
+
 .preview-pdf {
-    width: 100px;
+    width: 90px;
     margin-bottom: 10px;
 }
-.file-name {
-    font-size: 16px;
-    font-weight: 500;
-}
+
 /* ===== Footer ===== */
 footer {
     margin-top: auto;
@@ -239,18 +391,20 @@ footer a:hover {
 /* ===== Responsive ===== */
 @media (max-width: 900px) {
     main {
-        flex-direction: column;
-        align-items: center;
+        padding: 30px 20px 40px;
     }
 
-    .forms-left {
+    .content-wrapper {
         width: 100%;
-        align-items: center;
     }
 
-    .admin-right {
-        justify-content: center;
-        margin-top: 30px;
+    .upload-box {
+        width: 100%;
+        padding: 60px 20px;
+    }
+
+    .form-card {
+        padding: 25px 20px;
     }
 
     footer {
