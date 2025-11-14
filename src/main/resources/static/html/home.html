@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home | Petition System</title>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css\home.css">
+    <link rel="stylesheet" href="css/home.css">
 </head>
 <body>
 
@@ -14,11 +14,11 @@
         <!-- แถบบน: โลโก้ + ข้อมูลผู้ใช้ -->
         <div class="top-bar">
             <div class="logo">
-                <img src="/Photo/Sci_TU_Logo_TH-1.png" alt="TU Logo">
+                <img src="../Photo/Sci_TU_Logo_TH-1.png" alt="TU Logo">
             </div>
 
             <div class="account" id="accountBtn">
-                <img src="/Photo/broker-vector-icon.jpg" alt="User">
+                <img src="../Photo/broker-vector-icon.jpg" alt="User">
                 <div class="account-info">
                     <span class="name"></span>
                     <span class="id"></span>
@@ -40,6 +40,7 @@
             <a href="#">เจ้าหน้าที่ฝ่ายวิชาการภาคพิเศษ</a>
             <a href="#">เจ้าหน้าที่คณะวิทยาศาสตร์ฯ</a>
             <a href="form-list.html">ตัวอย่างแบบฟอร์มคำร้อง</a>
+            <a href="petition-status.html">ติดตามสถานะคำร้อง</a>
             <a href="upload.html">อัพโหลดแบบฟอร์มคำร้อง</a>
         </nav>
     </header>
@@ -50,13 +51,27 @@
         <!-- ด้านซ้าย -->
         <section class="forms-left">
             <a href="form-list.html" class="form-box">
-                <img src="/Photo/image 1.jpg" alt="Form Icon">
-                <p>ตัวอย่างแบบฟอร์มคำร้อง</p>
+                    <img src="../Photo/image 1.jpg" alt="Form Icon">
+                <div class="form-box-text">
+                    <p class="form-box-title">ตัวอย่างแบบฟอร์มคำร้อง</p>
+                    <span class="form-box-subtitle">รวมลิงก์ดาวน์โหลดแบบฟอร์มคำร้องที่ใช้บ่อย</span>
+                </div>
+            </a>
+
+            <a href="petition-status.html" class="form-box">
+                    <img src="../Photo/337946.png" alt="Status Icon">
+                <div class="form-box-text">
+                    <p class="form-box-title">ติดตามสถานะคำร้อง</p>
+                    <span class="form-box-subtitle">ตรวจสอบความคืบหน้าและสถานะล่าสุดของคำร้องที่ส่งไป</span>
+                </div>
             </a>
 
             <a href="upload.html" class="form-box">
-                <img src="/Photo/file-upload-export-icon.png" alt="Upload Icon">
-                <p>อัพโหลดแบบฟอร์มคำร้อง</p>
+                    <img src="../Photo/file-upload-export-icon.png" alt="Upload Icon">
+                <div class="form-box-text">
+                    <p class="form-box-title">อัพโหลดแบบฟอร์มคำร้อง</p>
+                    <span class="form-box-subtitle">กรอกข้อมูลและอัปโหลดเอกสารประกอบคำร้องออนไลน์</span>
+                </div>
             </a>
         </section>
     </main>

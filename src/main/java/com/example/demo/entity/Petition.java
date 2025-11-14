@@ -1,6 +1,18 @@
 package com.example.demo.entity;
 
-import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.Basic;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Table;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -51,14 +63,31 @@ public class Petition {
     @Column(name = "purpose", columnDefinition = "NVARCHAR(MAX)")
     private String purpose;
 
-    @Column(name = "file_path")
-    private String filePath;
+    @Column(name = "file_content_type")
+    private String fileContentType;
+
+    @Column(name = "file_size")
+    private Long fileSize;
+
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    @Column(name = "file_data")
+    @JsonIgnore
+    private byte[] fileData;
 
     @Column(name = "upload_date")
     private LocalDateTime uploadDate;
 
     @PrePersist
     protected void onCreate() {
+        uploadDate = LocalDateTime.now();
+        if (status == null || status.isBlank()) {
+            status = "รอคำพิจารณา";
+        }
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
         uploadDate = LocalDateTime.now();
         if (status == null || status.isBlank()) {
             status = "รอคำพิจารณา";
@@ -108,8 +137,14 @@ public class Petition {
     public String getPurpose() { return purpose; }
     public void setPurpose(String purpose) { this.purpose = purpose; }
 
-    public String getFilePath() { return filePath; }
-    public void setFilePath(String filePath) { this.filePath = filePath; }
+    public String getFileContentType() { return fileContentType; }
+    public void setFileContentType(String fileContentType) { this.fileContentType = fileContentType; }
+
+    public Long getFileSize() { return fileSize; }
+    public void setFileSize(Long fileSize) { this.fileSize = fileSize; }
+
+    public byte[] getFileData() { return fileData; }
+    public void setFileData(byte[] fileData) { this.fileData = fileData; }
 
     public LocalDateTime getUploadDate() { return uploadDate; }
     public void setUploadDate(LocalDateTime uploadDate) { this.uploadDate = uploadDate; }

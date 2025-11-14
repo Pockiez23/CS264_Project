@@ -5,18 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>แก้ไขไฟล์คำร้อง</title>
   <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/html/css/upload-edit.css">
+  <link rel="stylesheet" href="css/upload-edit.css">
 </head>
 <body>
   <header class="navbar">
         <!-- แถบบน: โลโก้ + ข้อมูลผู้ใช้ -->
         <div class="top-bar">
             <div class="logo">
-                <img src="/Photo/Sci_TU_Logo_TH-1.png" alt="TU Logo">
+                <img src="../Photo/Sci_TU_Logo_TH-1.png" alt="TU Logo">
             </div>
 
             <div class="account" id="accountBtn">
-                <img src="/Photo/broker-vector-icon.jpg" alt="User">
+                <img src="../Photo/broker-vector-icon.jpg" alt="User">
                 <div class="account-info">
                     <span class="name"></span>
                     <span class="id"></span>
@@ -38,6 +38,7 @@
             <a href="#">เจ้าหน้าที่ฝ่ายวิชาการภาคพิเศษ</a>
             <a href="#">เจ้าหน้าที่คณะวิทยาศาสตร์ฯ</a>
             <a href="form-list.html">ตัวอย่างแบบฟอร์มคำร้อง</a>
+            <a href="petition-status.html">ติดตามสถานะคำร้อง</a>
             <a href="upload.html">อัพโหลดแบบฟอร์มคำร้อง</a>
         </nav>
     </header>
@@ -185,47 +186,49 @@ Technology Thammasat Official</a></p>
 
             const currentFileName = document.getElementById("currentFileName");
             const currentFileLink = document.getElementById("currentFileLink");
-            if (data.fileName) {
+            const hasFile = Number(data.fileSize || 0) > 0;
+            if (hasFile && data.fileName) {
               currentFileName.textContent = data.fileName;
             } else {
               currentFileName.textContent = "ไม่มีไฟล์แนบ";
             }
-            if (data.filePath) {
-              currentFileLink.href = `/uploads/${data.filePath}`;
+            if (hasFile && petitionId) {
+              currentFileLink.href = `/api/petitions/${encodeURIComponent(petitionId)}/file`;
               currentFileLink.style.display = "inline";
             } else {
               currentFileLink.removeAttribute("href");
               currentFileLink.style.display = "none";
             }
-            updatePreview(data.filePath, data.fileName);
+            updatePreview(hasFile, data.fileName, data.fileContentType);
             document.getElementById("fileReplace").value = "";
             document.getElementById("newFileName").textContent = "หากไม่เลือกไฟล์ใหม่ ระบบจะใช้ไฟล์เดิม";
           }
 
-          function updatePreview(filePath, fileName) {
+          function updatePreview(hasFile, fileName, contentType) {
             const previewBox = document.getElementById("previewBox");
             const previewText = document.getElementById("previewText");
             previewBox.innerHTML = "";
-            if (!filePath) {
+            if (!hasFile) {
               previewText.textContent = "ยังไม่มีไฟล์แนบ";
               previewBox.appendChild(previewText);
               return;
             }
-            const extension = (fileName || "").split(".").pop().toLowerCase();
-            if (["png", "jpg", "jpeg"].includes(extension)) {
+            const label = document.createElement("p");
+            const type = (contentType || "").toLowerCase();
+            const previewUrl = petitionId ? `/api/petitions/${encodeURIComponent(petitionId)}/file` : null;
+            if (type.startsWith("image/") && previewUrl) {
               const img = document.createElement("img");
-              img.src = `/uploads/${filePath}`;
+              img.src = previewUrl;
               img.alt = fileName || "Preview";
               img.classList.add("preview-image");
               previewBox.appendChild(img);
             } else {
               const icon = document.createElement("img");
               icon.src = "https://cdn-icons-png.flaticon.com/512/337/337946.png";
-              icon.alt = "PDF";
+              icon.alt = "Document";
               icon.classList.add("preview-pdf");
               previewBox.appendChild(icon);
             }
-            const label = document.createElement("p");
             label.textContent = fileName || "ไฟล์คำร้อง";
             previewBox.appendChild(label);
             previewText.textContent = "คลิกเพื่อเลือกไฟล์คำร้องใหม่";
@@ -243,7 +246,7 @@ Technology Thammasat Official</a></p>
             if (!file) {
               newFileLabel.textContent = "หากไม่เลือกไฟล์ใหม่ ระบบจะใช้ไฟล์เดิม";
               if (lastLoadedData) {
-                updatePreview(lastLoadedData.filePath, lastLoadedData.fileName);
+                updatePreview(Number(lastLoadedData.fileSize || 0) > 0, lastLoadedData.fileName, lastLoadedData.fileContentType);
               }
               return;
             }
@@ -253,7 +256,7 @@ Technology Thammasat Official</a></p>
               event.target.value = "";
               newFileLabel.textContent = "หากไม่เลือกไฟล์ใหม่ ระบบจะใช้ไฟล์เดิม";
               if (lastLoadedData) {
-                updatePreview(lastLoadedData.filePath, lastLoadedData.fileName);
+                updatePreview(Number(lastLoadedData.fileSize || 0) > 0, lastLoadedData.fileName, lastLoadedData.fileContentType);
               }
               return;
             }
@@ -262,7 +265,7 @@ Technology Thammasat Official</a></p>
               event.target.value = "";
               newFileLabel.textContent = "หากไม่เลือกไฟล์ใหม่ ระบบจะใช้ไฟล์เดิม";
               if (lastLoadedData) {
-                updatePreview(lastLoadedData.filePath, lastLoadedData.fileName);
+                updatePreview(Number(lastLoadedData.fileSize || 0) > 0, lastLoadedData.fileName, lastLoadedData.fileContentType);
               }
               return;
             }

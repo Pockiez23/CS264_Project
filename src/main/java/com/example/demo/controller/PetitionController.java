@@ -1,14 +1,23 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.PetitionStatusUpdateRequest;
 import com.example.demo.entity.Petition;
 import com.example.demo.repository.PetitionRepository;
 import com.example.demo.service.PetitionService;
+import jakarta.validation.Valid;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -67,6 +76,33 @@ public class PetitionController {
         return ResponseEntity.ok(service.get(id));
     }
 
+    @GetMapping("/{id}/file")
+    public ResponseEntity<ByteArrayResource> downloadPetitionFile(@PathVariable Long id) {
+        try {
+            PetitionService.PetitionFileData fileData = service.loadFile(id);
+            MediaType mediaType = MediaType.APPLICATION_OCTET_STREAM;
+            if (StringUtils.hasText(fileData.contentType())) {
+                try {
+                    mediaType = MediaType.parseMediaType(fileData.contentType());
+                } catch (IllegalArgumentException ignored) {
+                    mediaType = MediaType.APPLICATION_OCTET_STREAM;
+                }
+            }
+            String filename = fileData.fileName();
+            if (!StringUtils.hasText(filename)) {
+                filename = "petition-" + id;
+            }
+            String encoded = URLEncoder.encode(filename, StandardCharsets.UTF_8).replace("+", "%20");
+            ByteArrayResource resource = new ByteArrayResource(fileData.data());
+            return ResponseEntity.ok()
+                    .contentType(mediaType)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename*=UTF-8''" + encoded)
+                    .body(resource);
+        } catch (IllegalArgumentException | IllegalStateException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
     @GetMapping("/me")
     public ResponseEntity<List<Petition>> myPetitions(@RequestParam String studentId){
         return ResponseEntity.ok(service.listByStudent(studentId));
@@ -103,5 +139,18 @@ public class PetitionController {
 
         Petition updated = service.update(id, petition, file);
         return ResponseEntity.ok(updated);
+    }
+
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<Petition> updatePetitionStatus(@PathVariable Long id,
+                                                         @Valid @RequestBody PetitionStatusUpdateRequest request) {
+        Petition updated = service.updateStatus(id, request.getStatus());
+        return ResponseEntity.ok(updated);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletePetition(@PathVariable Long id) {
+        service.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

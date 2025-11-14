@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ติดตามสถานะคำร้อง | Petition System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/petition-status.css">
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="top-bar">
+            <div class="logo">
+                <img src="../Photo/Sci_TU_Logo_TH-1.png" alt="TU Logo">
+            </div>
+
+            <div class="account" id="accountBtn">
+                <img src="../Photo/broker-vector-icon.jpg" alt="User">
+                <div class="account-info">
+                    <span class="name"></span>
+                    <span class="id"></span>
+                </div>
+            </div>
+
+            <div class="popup" id="popup">
+                <p><span id="popupName"></span><br><small id="popupID"></small></p>
+                <button id="logoutBtn">LOGOUT</button>
+            </div>
+        </div>
+
+        <nav class="menu-bar">
+            <a href="#">อาจารย์ผู้สอน</a>
+            <a href="#">ฝ่ายคณะบดี</a>
+            <a href="#">เจ้าหน้าที่ฝ่ายวิชาการภาคปกติ</a>
+            <a href="#">เจ้าหน้าที่ฝ่ายวิชาการภาคพิเศษ</a>
+            <a href="#">เจ้าหน้าที่คณะวิทยาศาสตร์ฯ</a>
+            <a href="form-list.html">ตัวอย่างแบบฟอร์มคำร้อง</a>
+            <a href="petition-status.html" class="active">ติดตามสถานะคำร้อง</a>
+            <a href="upload.html">อัพโหลดแบบฟอร์มคำร้อง</a>
+        </nav>
+    </header>
+
+    <main>
+        <a href="home.html" class="back-btn">← Back to Home</a>
+
+        <section class="page-header">
+            <div class="page-title">
+                <h1>ติดตามสถานะคำร้องของฉัน</h1>
+                <p>ตรวจสอบความคืบหน้าและรายละเอียดของคำร้องที่คุณยื่น โดยระบบจะแสดงสถานะล่าสุดพร้อมข้อมูลสำคัญที่เกี่ยวข้องกับคำร้องของคุณ</p>
+            </div>
+            <div class="header-actions">
+                <button id="refreshBtn" class="refresh-btn">รีเฟรชรายการ</button>
+                <span id="lastUpdated" class="last-updated">อัปเดตล่าสุด: -</span>
+            </div>
+        </section>
+
+        <section class="status-summary">
+            <div class="summary-card summary-card--total" data-type="total">
+                <span class="summary-label">คำร้องทั้งหมด</span>
+                <span class="summary-value">0</span>
+            </div>
+            <div class="summary-card summary-card--pending" data-type="pending">
+                <span class="summary-label">รอคำพิจารณา</span>
+                <span class="summary-value">0</span>
+            </div>
+            <div class="summary-card summary-card--in-progress" data-type="in-progress">
+                <span class="summary-label">กำลังดำเนินการ</span>
+                <span class="summary-value">0</span>
+            </div>
+            <div class="summary-card summary-card--completed" data-type="completed">
+                <span class="summary-label">เสร็จสิ้น / อนุมัติ</span>
+                <span class="summary-value">0</span>
+            </div>
+            <div class="summary-card summary-card--rejected" data-type="rejected">
+                <span class="summary-label">ปฏิเสธ / ตีกลับ</span>
+                <span class="summary-value">0</span>
+            </div>
+        </section>
+
+        <section class="status-board">
+            <div id="loadingState" class="state-message">
+                <span class="state-title">กำลังโหลดข้อมูลคำร้อง...</span>
+                <p>กรุณารอสักครู่ ระบบกำลังดึงข้อมูลล่าสุดของคุณ</p>
+            </div>
+            <div id="errorState" class="state-message hidden">
+                <span class="state-title">ไม่สามารถโหลดข้อมูลได้</span>
+                <p>เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์ กรุณาลองใหม่อีกครั้งภายหลัง</p>
+                <button class="refresh-btn refresh-btn--subtle" id="retryBtn">ลองอีกครั้ง</button>
+            </div>
+            <div id="emptyState" class="state-message hidden">
+                <span class="state-title">ยังไม่มีคำร้องในระบบ</span>
+                <p>เริ่มต้นยื่นคำร้องแรกของคุณได้ที่หน้าอัปโหลดแบบฟอร์ม</p>
+                <a class="link-button" href="upload.html">ไปยังหน้าอัปโหลดคำร้อง</a>
+            </div>
+            <div id="petitionList" class="petition-grid hidden"></div>
+        </section>
+    </main>
+
+    <footer>
+        <p>คณะวิทยาศาสตร์และเทคโนโลยี มธ. ศูนย์รังสิต ชั้น 3 อาคารบรรยายรวม 5<br>
+        เลขที่ 99 หมู่ 18 ถนนพหลโยธิน ต.คลองหนึ่ง อ.คลองหลวง ปทุมธานี 12120<br>
+        โทรศัพท์ : 0-2564-4440-79 ต่อ 2010</p>
+        <p>Email: <a href="mailto:SCITECH.THAMMASAT@GMAIL.COM">scitech.thammasat@gmail.com</a> |
+           Facebook: <a href="https://www.facebook.com/ScienceThammasat/" target="_blank" rel="noopener noreferrer">Science and Technology Thammasat Official</a></p>
+    </footer>
+
+    <script src="auth.js"></script>
+    <script>
+        const session = requireAuth("login.html");
+        const petitionListEl = document.getElementById("petitionList");
+        const loadingStateEl = document.getElementById("loadingState");
+        const errorStateEl = document.getElementById("errorState");
+        const emptyStateEl = document.getElementById("emptyState");
+        const refreshBtn = document.getElementById("refreshBtn");
+        const retryBtn = document.getElementById("retryBtn");
+        const lastUpdatedEl = document.getElementById("lastUpdated");
+
+        document.addEventListener("DOMContentLoaded", () => {
+            fillUserHeader();
+            setupPopup();
+            loadPetitions();
+        });
+
+        refreshBtn?.addEventListener("click", () => loadPetitions());
+        retryBtn?.addEventListener("click", () => loadPetitions());
+
+        function setupPopup() {
+            const popupName = document.getElementById("popupName");
+            const popupID = document.getElementById("popupID");
+            if (popupName) popupName.textContent = session.name || "";
+            if (popupID) popupID.textContent = session.student_id || "";
+            const accountBtn = document.getElementById("accountBtn");
+            const popup = document.getElementById("popup");
+            if (!accountBtn || !popup) return;
+            accountBtn.addEventListener("click", () => popup.classList.toggle("show"));
+            document.addEventListener("click", (event) => {
+                if (!accountBtn.contains(event.target) && !popup.contains(event.target)) {
+                    popup.classList.remove("show");
+                }
+            });
+            document.getElementById("logoutBtn")?.addEventListener("click", () => {
+                if (confirm("ต้องการออกจากระบบหรือไม่?")) logout("login.html");
+            });
+        }
+
+        async function loadPetitions() {
+            showState("loading");
+            try {
+                const response = await fetch(`/api/petitions/me?studentId=${encodeURIComponent(session.student_id)}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                const petitions = await response.json();
+                if (!Array.isArray(petitions) || petitions.length === 0) {
+                    petitionListEl.innerHTML = "";
+                    updateSummary([]);
+                    showState("empty");
+                } else {
+                    renderPetitions(petitions);
+                    updateSummary(petitions);
+                    showState("data");
+                }
+                updateLastUpdated();
+            } catch (error) {
+                console.error(error);
+                showState("error");
+            }
+        }
+
+        function showState(state) {
+            loadingStateEl.classList.toggle("hidden", state !== "loading");
+            errorStateEl.classList.toggle("hidden", state !== "error");
+            emptyStateEl.classList.toggle("hidden", state !== "empty");
+            petitionListEl.classList.toggle("hidden", state !== "data");
+        }
+
+        function renderPetitions(petitions) {
+            const content = petitions
+                .map((petition) => createPetitionCard(petition))
+                .join("");
+            petitionListEl.innerHTML = content;
+            attachActionHandlers();
+        }
+
+        function createPetitionCard(petition) {
+            const petitionDate = formatDate(petition.petitionDate);
+            const uploadDate = formatDateTime(petition.uploadDate);
+            const statusLabel = escapeHtml(petition.status || "ไม่ระบุสถานะ");
+            const statusClass = getStatusBadgeClass(petition.status);
+            const advisor = escapeHtml(petition.advisorName || "-");
+            const curriculum = escapeHtml(petition.curriculum || "-");
+            const major = escapeHtml(petition.major || "-");
+            const purpose = formatMultiline(petition.purpose);
+            const details = formatMultiline(petition.details);
+            const petitionId = petition.id;
+            const petitionIdParam = encodeURIComponent(petitionId);
+            const hasFile = Number(petition.fileSize || 0) > 0;
+            const viewFileAction = hasFile
+                ? `<a class="card-link" href="/api/petitions/${petitionIdParam}/file" target="_blank" rel="noopener noreferrer">เปิดไฟล์แนบ</a>`
+                : "";
+            const cancelAction = isCancellable(petition.status)
+                ? `<button type="button" class="card-link card-link--danger" data-action="cancel" data-id="${petitionId}">ยกเลิกคำร้อง</button>`
+                : "";
+
+            return `
+                <article class="petition-card">
+                    <header class="petition-card__header">
+                        <div class="petition-card__meta">
+                            <h3>คำร้อง #${petition.id}</h3>
+                            <span class="petition-card__date">ยื่นเมื่อ ${petitionDate}</span>
+                        </div>
+                        <span class="status-badge ${statusClass}">${statusLabel}</span>
+                    </header>
+                    <div class="petition-card__body">
+                        <p class="petition-card__purpose">${purpose}</p>
+                        <dl class="petition-card__details">
+                            <div>
+                                <dt>อาจารย์ที่ปรึกษา</dt>
+                                <dd>${advisor}</dd>
+                            </div>
+                            <div>
+                                <dt>หลักสูตร / สาขาวิชา</dt>
+                                <dd>${curriculum} · ${major}</dd>
+                            </div>
+                            <div>
+                                <dt>วันที่อัปเดตล่าสุด</dt>
+                                <dd>${uploadDate}</dd>
+                            </div>
+                        </dl>
+                        <details class="petition-card__more">
+                            <summary>อ่านรายละเอียดคำร้อง</summary>
+                            <p>${details}</p>
+                        </details>
+                    </div>
+                    <footer class="petition-card__footer">
+                        ${viewFileAction}
+                        <a class="card-link" href="upload-edit.html?id=${petitionIdParam}">แก้ไขคำร้อง</a>
+                        ${cancelAction}
+                    </footer>
+                </article>
+            `;
+        }
+
+        function attachActionHandlers() {
+            petitionListEl.querySelectorAll('[data-action="cancel"]').forEach((button) => {
+                button.addEventListener("click", handleCancelClick);
+            });
+        }
+
+        async function handleCancelClick(event) {
+            const button = event.currentTarget;
+            const petitionId = button.dataset.id;
+            if (!petitionId) {
+                return;
+            }
+            if (!confirm("ยืนยันการยกเลิกคำร้องนี้หรือไม่?")) {
+                return;
+            }
+            button.disabled = true;
+            try {
+                await cancelPetition(petitionId);
+                alert("ยกเลิกคำร้องเรียบร้อยแล้ว");
+                await loadPetitions();
+            } catch (error) {
+                console.error(error);
+                alert("ไม่สามารถยกเลิกคำร้องได้ กรุณาลองใหม่อีกครั้ง");
+            } finally {
+                button.disabled = false;
+            }
+        }
+
+        async function cancelPetition(petitionId) {
+            const response = await fetch(`/api/petitions/${encodeURIComponent(petitionId)}/status`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ status: "ยกเลิกคำร้อง" })
+            });
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+        }
+
+        function isCancellable(status) {
+            const text = (status || "").toString().trim().toLowerCase();
+            if (!text) {
+                return true;
+            }
+            if (text.includes("ยกเลิก") || text.includes("cancel")) {
+                return false;
+            }
+            if (text.includes("อนุมัติ") || text.includes("approve") || text.includes("สำเร็จ") || text.includes("เสร็จ")) {
+                return false;
+            }
+            if (text.includes("ปฏิเสธ") || text.includes("reject") || text.includes("ไม่อนุมัติ") || text.includes("ตีกลับ")) {
+                return false;
+            }
+            return true;
+        }
+
+        function updateSummary(petitions) {
+            const summary = {
+                total: petitions.length,
+                pending: 0,
+                "in-progress": 0,
+                completed: 0,
+                rejected: 0
+            };
+
+            petitions.forEach((petition) => {
+                const category = getStatusCategory(petition.status);
+                if (summary[category] !== undefined) {
+                    summary[category] += 1;
+                }
+            });
+
+            Object.entries(summary).forEach(([key, value]) => {
+                const card = document.querySelector(`.summary-card[data-type="${key}"] .summary-value`);
+                if (card) {
+                    card.textContent = value.toString();
+                }
+            });
+        }
+
+        function updateLastUpdated() {
+            if (!lastUpdatedEl) return;
+            const formatter = new Intl.DateTimeFormat('th-TH', {
+                dateStyle: 'medium',
+                timeStyle: 'short'
+            });
+            lastUpdatedEl.textContent = `อัปเดตล่าสุด: ${formatter.format(new Date())}`;
+        }
+
+        function formatDate(dateValue) {
+            if (!dateValue) {
+                return "-";
+            }
+            const date = new Date(dateValue);
+            if (Number.isNaN(date.getTime()) && typeof dateValue === "string") {
+                const fallback = new Date(`${dateValue}T00:00:00`);
+                if (!Number.isNaN(fallback.getTime())) {
+                    return new Intl.DateTimeFormat('th-TH', { dateStyle: 'medium' }).format(fallback);
+                }
+            }
+            if (Number.isNaN(date.getTime())) {
+                return "-";
+            }
+            return new Intl.DateTimeFormat('th-TH', { dateStyle: 'medium' }).format(date);
+        }
+
+        function formatDateTime(dateValue) {
+            if (!dateValue) {
+                return "-";
+            }
+            const date = new Date(dateValue);
+            if (Number.isNaN(date.getTime())) {
+                return "-";
+            }
+            return new Intl.DateTimeFormat('th-TH', {
+                dateStyle: 'medium',
+                timeStyle: 'short'
+            }).format(date);
+        }
+
+        function getStatusCategory(status) {
+            const text = (status || "").toString().trim().toLowerCase();
+            if (!text) return "pending";
+            if (text.includes("รอ") || text.includes("pending")) return "pending";
+            if (text.includes("ดำเนิน") || text.includes("process") || text.includes("กำลัง")) return "in-progress";
+            if (text.includes("เสร็จ") || text.includes("สำเร็จ") || text.includes("อนุมัติ") || text.includes("approve")) return "completed";
+            if (text.includes("ปฏิเสธ") || text.includes("reject") || text.includes("ไม่อนุมัติ") || text.includes("ตีกลับ") || text.includes("ยกเลิก") || text.includes("cancel")) return "rejected";
+            return "in-progress";
+        }
+
+        function getStatusBadgeClass(status) {
+            const category = getStatusCategory(status);
+            switch (category) {
+                case "pending":
+                    return "pending";
+                case "in-progress":
+                    return "in-progress";
+                case "completed":
+                    return "completed";
+                case "rejected":
+                    return "rejected";
+                default:
+                    return "other";
+            }
+        }
+
+        function escapeHtml(value) {
+            if (value === null || value === undefined) {
+                return "";
+            }
+            return value
+                .toString()
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#39;");
+        }
+
+        function formatMultiline(value) {
+            const safe = escapeHtml(value || "-");
+            return safe.replace(/\n/g, "<br>");
+        }
+    </script>
+</body>
+</html>

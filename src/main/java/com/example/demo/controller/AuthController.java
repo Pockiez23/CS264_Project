@@ -2,22 +2,40 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.LoginRequest;
 import com.example.demo.dto.LoginResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
 @CrossOrigin(origins = {"http://localhost:5500", "http://127.0.0.1:5500"}) // ✅ อนุญาตให้ frontend เข้าถึง
 public class AuthController {
 
+    private final String tuApiBaseUrl;
+    private final String tuApplicationKey;
+
+    public AuthController(
+            @Value("${tu.api.base-url}") String tuApiBaseUrl,
+            @Value("${tu.api.application-key:}") String tuApplicationKey) {
+        this.tuApiBaseUrl = tuApiBaseUrl;
+        this.tuApplicationKey = tuApplicationKey;
+    }
+
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
         try {
-            String url = "https://restapi.tu.ac.th/api/v1/auth/Ad/verify";
+            if (!StringUtils.hasText(tuApplicationKey)) {
+                return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                        .body(new LoginResponse(false, "ยังไม่ได้ตั้งค่า TU Application Key ในระบบ"));
+            }
+
+            String url = tuApiBaseUrl;
 
             // ✅ สร้าง body ตามที่ TU API ต้องการ
             Map<String, String> body = new HashMap<>();
@@ -27,7 +45,7 @@ public class AuthController {
             // ✅ Header ต้องใส่ Application-Key
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-            headers.set("Application-Key", "YOUR_TU_APPLICATION_KEY"); // 🔑 ใส่คีย์จริงตรงนี้
+            headers.set("Application-Key", tuApplicationKey);
 
             // ✅ ยิงไปยัง TU API
             HttpEntity<Map<String, String>> entity = new HttpEntity<>(body, headers);
@@ -57,6 +75,16 @@ public class AuthController {
                         .body(new LoginResponse(false, "ไม่สามารถตรวจสอบบัญชีได้"));
             }
 
+        } catch (HttpClientErrorException.Unauthorized e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new LoginResponse(false, "อีเมลหรือรหัสผ่านไม่ถูกต้อง"));
+        } catch (HttpClientErrorException e) {
+            String message = e.getResponseBodyAsString();
+            if (!StringUtils.hasText(message)) {
+                message = "TU API ตอบกลับด้วยข้อผิดพลาด: " + e.getStatusCode();
+            }
+            return ResponseEntity.status(e.getStatusCode())
+                    .body(new LoginResponse(false, message));
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(500)
