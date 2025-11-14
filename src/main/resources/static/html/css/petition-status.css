@@ -413,9 +413,6 @@ main {
 .petition-card__footer {
     display: flex;
     justify-content: flex-end;
-    gap: 16px;
-    flex-wrap: wrap;
-    align-items: center;
 }
 
 .card-link {
@@ -426,27 +423,6 @@ main {
 
 .card-link:hover {
     text-decoration: underline;
-}
-
-button.card-link {
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    font: inherit;
-}
-
-button.card-link:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
-.card-link--danger {
-    color: #dc2626;
-}
-
-.card-link--danger:hover {
-    color: #b91c1c;
 }
 
 .hidden {

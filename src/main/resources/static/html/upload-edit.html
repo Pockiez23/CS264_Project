@@ -12,11 +12,11 @@
         <!-- แถบบน: โลโก้ + ข้อมูลผู้ใช้ -->
         <div class="top-bar">
             <div class="logo">
-                <img src="../Photo/Sci_TU_Logo_TH-1.png" alt="TU Logo">
+                <img src="/Photo/Sci_TU_Logo_TH-1.png" alt="TU Logo">
             </div>
 
             <div class="account" id="accountBtn">
-                <img src="../Photo/broker-vector-icon.jpg" alt="User">
+                <img src="/Photo/broker-vector-icon.jpg" alt="User">
                 <div class="account-info">
                     <span class="name"></span>
                     <span class="id"></span>
@@ -186,49 +186,47 @@ Technology Thammasat Official</a></p>
 
             const currentFileName = document.getElementById("currentFileName");
             const currentFileLink = document.getElementById("currentFileLink");
-            const hasFile = Number(data.fileSize || 0) > 0;
-            if (hasFile && data.fileName) {
+            if (data.fileName) {
               currentFileName.textContent = data.fileName;
             } else {
               currentFileName.textContent = "ไม่มีไฟล์แนบ";
             }
-            if (hasFile && petitionId) {
-              currentFileLink.href = `/api/petitions/${encodeURIComponent(petitionId)}/file`;
+            if (data.filePath) {
+              currentFileLink.href = `/uploads/${data.filePath}`;
               currentFileLink.style.display = "inline";
             } else {
               currentFileLink.removeAttribute("href");
               currentFileLink.style.display = "none";
             }
-            updatePreview(hasFile, data.fileName, data.fileContentType);
+            updatePreview(data.filePath, data.fileName);
             document.getElementById("fileReplace").value = "";
             document.getElementById("newFileName").textContent = "หากไม่เลือกไฟล์ใหม่ ระบบจะใช้ไฟล์เดิม";
           }
 
-          function updatePreview(hasFile, fileName, contentType) {
+          function updatePreview(filePath, fileName) {
             const previewBox = document.getElementById("previewBox");
             const previewText = document.getElementById("previewText");
             previewBox.innerHTML = "";
-            if (!hasFile) {
+            if (!filePath) {
               previewText.textContent = "ยังไม่มีไฟล์แนบ";
               previewBox.appendChild(previewText);
               return;
             }
-            const label = document.createElement("p");
-            const type = (contentType || "").toLowerCase();
-            const previewUrl = petitionId ? `/api/petitions/${encodeURIComponent(petitionId)}/file` : null;
-            if (type.startsWith("image/") && previewUrl) {
+            const extension = (fileName || "").split(".").pop().toLowerCase();
+            if (["png", "jpg", "jpeg"].includes(extension)) {
               const img = document.createElement("img");
-              img.src = previewUrl;
+              img.src = `/uploads/${filePath}`;
               img.alt = fileName || "Preview";
               img.classList.add("preview-image");
               previewBox.appendChild(img);
             } else {
               const icon = document.createElement("img");
               icon.src = "https://cdn-icons-png.flaticon.com/512/337/337946.png";
-              icon.alt = "Document";
+              icon.alt = "PDF";
               icon.classList.add("preview-pdf");
               previewBox.appendChild(icon);
             }
+            const label = document.createElement("p");
             label.textContent = fileName || "ไฟล์คำร้อง";
             previewBox.appendChild(label);
             previewText.textContent = "คลิกเพื่อเลือกไฟล์คำร้องใหม่";
@@ -246,7 +244,7 @@ Technology Thammasat Official</a></p>
             if (!file) {
               newFileLabel.textContent = "หากไม่เลือกไฟล์ใหม่ ระบบจะใช้ไฟล์เดิม";
               if (lastLoadedData) {
-                updatePreview(Number(lastLoadedData.fileSize || 0) > 0, lastLoadedData.fileName, lastLoadedData.fileContentType);
+                updatePreview(lastLoadedData.filePath, lastLoadedData.fileName);
               }
               return;
             }
@@ -256,7 +254,7 @@ Technology Thammasat Official</a></p>
               event.target.value = "";
               newFileLabel.textContent = "หากไม่เลือกไฟล์ใหม่ ระบบจะใช้ไฟล์เดิม";
               if (lastLoadedData) {
-                updatePreview(Number(lastLoadedData.fileSize || 0) > 0, lastLoadedData.fileName, lastLoadedData.fileContentType);
+                updatePreview(lastLoadedData.filePath, lastLoadedData.fileName);
               }
               return;
             }
@@ -265,7 +263,7 @@ Technology Thammasat Official</a></p>
               event.target.value = "";
               newFileLabel.textContent = "หากไม่เลือกไฟล์ใหม่ ระบบจะใช้ไฟล์เดิม";
               if (lastLoadedData) {
-                updatePreview(Number(lastLoadedData.fileSize || 0) > 0, lastLoadedData.fileName, lastLoadedData.fileContentType);
+                updatePreview(lastLoadedData.filePath, lastLoadedData.fileName);
               }
               return;
             }
