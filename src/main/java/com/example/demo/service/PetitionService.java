@@ -28,6 +28,8 @@ public class PetitionService {
     private static final Pattern PHONE_PATTERN = Pattern.compile("^[0-9]{9,10}$");
 
     public PetitionService(PetitionRepository repo){
+    public PetitionService(PetitionRepository repo,
+                           @Value("${app.upload.dir:uploads}") String uploadDir){
         this.repo = repo;
     }
 
