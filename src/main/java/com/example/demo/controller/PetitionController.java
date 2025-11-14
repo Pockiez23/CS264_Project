@@ -5,12 +5,19 @@ import com.example.demo.entity.Petition;
 import com.example.demo.repository.PetitionRepository;
 import com.example.demo.service.PetitionService;
 import jakarta.validation.Valid;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -67,6 +74,33 @@ public class PetitionController {
     @GetMapping("/{id}")
     public ResponseEntity<Petition> getPetition(@PathVariable Long id) {
         return ResponseEntity.ok(service.get(id));
+    }
+
+    @GetMapping("/{id}/file")
+    public ResponseEntity<ByteArrayResource> downloadPetitionFile(@PathVariable Long id) {
+        try {
+            PetitionService.PetitionFileData fileData = service.loadFile(id);
+            MediaType mediaType = MediaType.APPLICATION_OCTET_STREAM;
+            if (StringUtils.hasText(fileData.contentType())) {
+                try {
+                    mediaType = MediaType.parseMediaType(fileData.contentType());
+                } catch (IllegalArgumentException ignored) {
+                    mediaType = MediaType.APPLICATION_OCTET_STREAM;
+                }
+            }
+            String filename = fileData.fileName();
+            if (!StringUtils.hasText(filename)) {
+                filename = "petition-" + id;
+            }
+            String encoded = URLEncoder.encode(filename, StandardCharsets.UTF_8).replace("+", "%20");
+            ByteArrayResource resource = new ByteArrayResource(fileData.data());
+            return ResponseEntity.ok()
+                    .contentType(mediaType)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename*=UTF-8''" + encoded)
+                    .body(resource);
+        } catch (IllegalArgumentException | IllegalStateException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 
     @GetMapping("/me")

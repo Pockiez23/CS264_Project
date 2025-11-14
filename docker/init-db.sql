@@ -15,6 +15,8 @@ BEGIN
     id BIGINT IDENTITY(1,1) PRIMARY KEY,
     advisor_name NVARCHAR(255) NULL,
     file_name NVARCHAR(255) NULL,
+    file_content_type NVARCHAR(255) NULL,
+    file_size BIGINT NULL,
     status NVARCHAR(100) NULL,
     student_id NVARCHAR(50) NOT NULL,
     student_name NVARCHAR(255) NOT NULL,
@@ -27,6 +29,7 @@ BEGIN
     address NVARCHAR(MAX) NULL,
     purpose NVARCHAR(MAX) NULL,
     file_path NVARCHAR(255) NULL,
+    file_data VARBINARY(MAX) NULL,
     upload_date DATETIME2 NULL
   );
 END
@@ -50,6 +53,12 @@ BEGIN
     ALTER TABLE dbo.petitions ADD purpose NVARCHAR(MAX) NULL;
   IF COL_LENGTH('dbo.petitions', 'file_path') IS NULL
     ALTER TABLE dbo.petitions ADD file_path NVARCHAR(255) NULL;
+  IF COL_LENGTH('dbo.petitions', 'file_content_type') IS NULL
+    ALTER TABLE dbo.petitions ADD file_content_type NVARCHAR(255) NULL;
+  IF COL_LENGTH('dbo.petitions', 'file_size') IS NULL
+    ALTER TABLE dbo.petitions ADD file_size BIGINT NULL;
+  IF COL_LENGTH('dbo.petitions', 'file_data') IS NULL
+    ALTER TABLE dbo.petitions ADD file_data VARBINARY(MAX) NULL;
   IF COL_LENGTH('dbo.petitions', 'upload_date') IS NULL
     ALTER TABLE dbo.petitions ADD upload_date DATETIME2 NULL;
 END

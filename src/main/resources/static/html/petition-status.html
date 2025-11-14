@@ -12,11 +12,11 @@
     <header class="navbar">
         <div class="top-bar">
             <div class="logo">
-                <img src="/Photo/Sci_TU_Logo_TH-1.png" alt="TU Logo">
+                <img src="../Photo/Sci_TU_Logo_TH-1.png" alt="TU Logo">
             </div>
 
             <div class="account" id="accountBtn">
-                <img src="/Photo/broker-vector-icon.jpg" alt="User">
+                <img src="../Photo/broker-vector-icon.jpg" alt="User">
                 <div class="account-info">
                     <span class="name"></span>
                     <span class="id"></span>
@@ -180,6 +180,7 @@
                 .map((petition) => createPetitionCard(petition))
                 .join("");
             petitionListEl.innerHTML = content;
+            attachActionHandlers();
         }
 
         function createPetitionCard(petition) {
@@ -192,7 +193,15 @@
             const major = escapeHtml(petition.major || "-");
             const purpose = formatMultiline(petition.purpose);
             const details = formatMultiline(petition.details);
-            const petitionId = encodeURIComponent(petition.id);
+            const petitionId = petition.id;
+            const petitionIdParam = encodeURIComponent(petitionId);
+            const hasFile = Number(petition.fileSize || 0) > 0;
+            const viewFileAction = hasFile
+                ? `<a class="card-link" href="/api/petitions/${petitionIdParam}/file" target="_blank" rel="noopener noreferrer">เปิดไฟล์แนบ</a>`
+                : "";
+            const cancelAction = isCancellable(petition.status)
+                ? `<button type="button" class="card-link card-link--danger" data-action="cancel" data-id="${petitionId}">ยกเลิกคำร้อง</button>`
+                : "";
 
             return `
                 <article class="petition-card">
@@ -225,10 +234,70 @@
                         </details>
                     </div>
                     <footer class="petition-card__footer">
-                        <a class="card-link" href="upload-edit.html?id=${petitionId}">แก้ไขคำร้อง</a>
+                        ${viewFileAction}
+                        <a class="card-link" href="upload-edit.html?id=${petitionIdParam}">แก้ไขคำร้อง</a>
+                        ${cancelAction}
                     </footer>
                 </article>
             `;
+        }
+
+        function attachActionHandlers() {
+            petitionListEl.querySelectorAll('[data-action="cancel"]').forEach((button) => {
+                button.addEventListener("click", handleCancelClick);
+            });
+        }
+
+        async function handleCancelClick(event) {
+            const button = event.currentTarget;
+            const petitionId = button.dataset.id;
+            if (!petitionId) {
+                return;
+            }
+            if (!confirm("ยืนยันการยกเลิกคำร้องนี้หรือไม่?")) {
+                return;
+            }
+            button.disabled = true;
+            try {
+                await cancelPetition(petitionId);
+                alert("ยกเลิกคำร้องเรียบร้อยแล้ว");
+                await loadPetitions();
+            } catch (error) {
+                console.error(error);
+                alert("ไม่สามารถยกเลิกคำร้องได้ กรุณาลองใหม่อีกครั้ง");
+            } finally {
+                button.disabled = false;
+            }
+        }
+
+        async function cancelPetition(petitionId) {
+            const response = await fetch(`/api/petitions/${encodeURIComponent(petitionId)}/status`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ status: "ยกเลิกคำร้อง" })
+            });
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+        }
+
+        function isCancellable(status) {
+            const text = (status || "").toString().trim().toLowerCase();
+            if (!text) {
+                return true;
+            }
+            if (text.includes("ยกเลิก") || text.includes("cancel")) {
+                return false;
+            }
+            if (text.includes("อนุมัติ") || text.includes("approve") || text.includes("สำเร็จ") || text.includes("เสร็จ")) {
+                return false;
+            }
+            if (text.includes("ปฏิเสธ") || text.includes("reject") || text.includes("ไม่อนุมัติ") || text.includes("ตีกลับ")) {
+                return false;
+            }
+            return true;
         }
 
         function updateSummary(petitions) {
@@ -301,7 +370,7 @@
             if (text.includes("รอ") || text.includes("pending")) return "pending";
             if (text.includes("ดำเนิน") || text.includes("process") || text.includes("กำลัง")) return "in-progress";
             if (text.includes("เสร็จ") || text.includes("สำเร็จ") || text.includes("อนุมัติ") || text.includes("approve")) return "completed";
-            if (text.includes("ปฏิเสธ") || text.includes("reject") || text.includes("ไม่อนุมัติ") || text.includes("ตีกลับ")) return "rejected";
+            if (text.includes("ปฏิเสธ") || text.includes("reject") || text.includes("ไม่อนุมัติ") || text.includes("ตีกลับ") || text.includes("ยกเลิก") || text.includes("cancel")) return "rejected";
             return "in-progress";
         }
 

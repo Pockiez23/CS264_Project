@@ -2,7 +2,6 @@ package com.example.demo.service;
 
 import com.example.demo.entity.Petition;
 import com.example.demo.repository.PetitionRepository;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,19 +9,13 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 import java.util.regex.Pattern;
 
 @Service
 public class PetitionService {
     private final PetitionRepository repo;
-    private final Path storageDirectory;
 
     private static final long MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
     private static final Set<String> ALLOWED_EXTENSIONS = Set.of("pdf", "png", "jpg", "jpeg");
@@ -34,26 +27,21 @@ public class PetitionService {
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$");
     private static final Pattern PHONE_PATTERN = Pattern.compile("^[0-9]{9,10}$");
 
+    public PetitionService(PetitionRepository repo){
     public PetitionService(PetitionRepository repo,
                            @Value("${app.upload.dir:uploads}") String uploadDir){
         this.repo = repo;
-        try {
-            this.storageDirectory = Paths.get(uploadDir).toAbsolutePath().normalize();
-            Files.createDirectories(this.storageDirectory);
-        } catch (IOException e) {
-            throw new IllegalStateException("ไม่สามารถสร้างโฟลเดอร์สำหรับเก็บไฟล์คำร้องได้", e);
-        }
     }
 
     @Transactional
     public Petition create(Petition petition, MultipartFile file) throws IOException {
-        if (file != null && !file.isEmpty()) {
-            validateFile(file);
-            storeFile(petition, file);
-        }
         validatePetitionData(petition);
         if (!StringUtils.hasText(petition.getStatus())) {
             petition.setStatus("รอคำพิจารณา");
+        }
+        if (file != null && !file.isEmpty()) {
+            validateFile(file);
+            storeFile(petition, file);
         }
         return repo.save(petition);
     }
@@ -83,7 +71,6 @@ public class PetitionService {
 
         if (file != null && !file.isEmpty()) {
             validateFile(file);
-            deleteExistingFile(existing.getFilePath());
             storeFile(existing, file);
         }
 
@@ -111,35 +98,26 @@ public class PetitionService {
     @Transactional
     public void delete(Long id) {
         Petition existing = get(id);
-        deleteExistingFile(existing.getFilePath());
         repo.delete(existing);
+    }
+
+    @Transactional(readOnly = true)
+    public PetitionFileData loadFile(Long id) {
+        Petition petition = repo.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("ไม่พบคำร้องหมายเลข " + id));
+        byte[] data = petition.getFileData();
+        if (data == null || data.length == 0) {
+            throw new IllegalStateException("คำร้องนี้ไม่มีไฟล์แนบ");
+        }
+        return new PetitionFileData(petition.getFileName(), petition.getFileContentType(), data);
     }
 
     private void storeFile(Petition petition, MultipartFile file) throws IOException {
         String originalFilename = StringUtils.cleanPath(file.getOriginalFilename());
-        String extension = "";
-        int dotIndex = originalFilename.lastIndexOf('.');
-        if (dotIndex >= 0) {
-            extension = originalFilename.substring(dotIndex);
-        }
-
-        String storedFileName = UUID.randomUUID() + extension;
-        Path targetLocation = storageDirectory.resolve(storedFileName);
-        Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-
         petition.setFileName(originalFilename);
-        petition.setFilePath(storedFileName);
-    }
-
-    private void deleteExistingFile(String storedFileName) {
-        if (!StringUtils.hasText(storedFileName)) {
-            return;
-        }
-        try {
-            Files.deleteIfExists(storageDirectory.resolve(storedFileName));
-        } catch (IOException ignored) {
-            // ถ้าลบไม่สำเร็จให้ข้ามไปก่อนเพื่อไม่ให้การอัปเดตคำร้องล้มเหลว
-        }
+        petition.setFileContentType(file.getContentType());
+        petition.setFileSize(file.getSize());
+        petition.setFileData(file.getBytes());
     }
 
     private void validateFile(MultipartFile file) {
@@ -199,4 +177,6 @@ public class PetitionService {
             throw new IllegalArgumentException("กรุณาระบุรายละเอียดคำร้อง");
         }
     }
+
+    public record PetitionFileData(String fileName, String contentType, byte[] data) { }
 }
