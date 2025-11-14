@@ -1,8 +1,10 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.PetitionStatusUpdateRequest;
 import com.example.demo.entity.Petition;
 import com.example.demo.repository.PetitionRepository;
 import com.example.demo.service.PetitionService;
+import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -103,5 +105,18 @@ public class PetitionController {
 
         Petition updated = service.update(id, petition, file);
         return ResponseEntity.ok(updated);
+    }
+
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<Petition> updatePetitionStatus(@PathVariable Long id,
+                                                         @Valid @RequestBody PetitionStatusUpdateRequest request) {
+        Petition updated = service.updateStatus(id, request.getStatus());
+        return ResponseEntity.ok(updated);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletePetition(@PathVariable Long id) {
+        service.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }
